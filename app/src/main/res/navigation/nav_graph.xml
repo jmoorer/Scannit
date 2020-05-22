@@ -15,4 +15,9 @@
         android:name="com.moor.scannit.ui.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.moor.scannit.ui.camera.CameraFragment"
+        android:label="fragment_camera"
+        tools:layout="@layout/fragment_camera" />
 </navigation>

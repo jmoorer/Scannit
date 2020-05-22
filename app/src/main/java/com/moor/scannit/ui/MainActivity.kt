@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.FirebaseApp
 import com.moor.scannit.R
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +25,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<NavigationView>(R.id.nav_view)
             .setupWithNavController(navController)
         setupActionBarWithNavController(navController,appBarConfiguration)
+
+        FirebaseApp.initializeApp(this)
+
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
