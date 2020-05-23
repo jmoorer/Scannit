@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     tools:context=".ui.camera.CameraFragment">
-
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/camera_capture_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize">
         <androidx.camera.view.PreviewView
             android:id="@+id/preview_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
+        <CheckBox
+            android:id="@+id/flash_checkbox"
+            android:layout_gravity="top|end"
+            android:gravity="center"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/flash"
+            android:button="@null"
+            app:buttonTint="@android:color/white" />
         <FrameLayout
             android:id="@+id/shutter"
             android:layout_width="match_parent"
@@ -31,19 +34,25 @@
     </FrameLayout>
 
 
-    <ImageButton
-        android:id="@+id/camera_capture_button"
-        android:layout_width="68dp"
-        android:layout_height="68dp"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="48dp"
-        android:contentDescription="click"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_shutter"
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom"
+        app:fabCradleMargin="0dp"
+        />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/bar"
+        android:src="@drawable/ic_camera"
+        app:layout_anchorGravity="top|center"
         android:tint="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:fabSize="auto"
+        app:fabCustomSize="80dp"
+        app:maxImageSize="60dp"
+        android:id="@+id/camera_capture_button"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

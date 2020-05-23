@@ -39,28 +39,28 @@ class CameraFragment : Fragment() {
     private lateinit var previewView: PreviewView
 
     private val REQUEST_CODE_PERMISSIONS = 10
-
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+
+    private lateinit var cameraControl: CameraControl
+    private lateinit var cameraInfo: CameraInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-
         outputDirectory = getOutputDirectory(requireContext())
-
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity?.actionBar?.setDisplayShowTitleEnabled(false);
         binding = FragmentCameraBinding.inflate(inflater, container, false).apply {
-           this@CameraFragment.previewView = previewView
+            this@CameraFragment.previewView = previewView
             cameraCaptureButton.setOnClickListener {
                 takePicture()
             }
-
+            bar.replaceMenu(R.menu.menu_camera)
         }
         if (allPermissionsGranted()) {
             previewView.post { startCamera() }
@@ -93,6 +93,10 @@ class CameraFragment : Fragment() {
 
         // Setup image capture listener which is triggered after photo has
         // been taken
+        if(binding.flashCheckbox.isChecked){
+            cameraControl.enableTorch(true)
+            imageCapture.flashMode=ImageCapture.FLASH_MODE_ON
+        }
         imageCapture.takePicture(
             outputOptions, ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
@@ -100,6 +104,7 @@ class CameraFragment : Fragment() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    cameraControl.enableTorch(false)
                     val savedUri = Uri.fromFile(photoFile)
                     val intent = Intent(context,
                         PreviewActivity::class.java)
@@ -111,11 +116,7 @@ class CameraFragment : Fragment() {
     }
 
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
@@ -129,6 +130,7 @@ class CameraFragment : Fragment() {
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
     }
+
     private fun startCamera() {
 
         imageCapture = ImageCapture.Builder().apply {
@@ -139,14 +141,26 @@ class CameraFragment : Fragment() {
             setTargetAspectRatio(AspectRatio.RATIO_16_9)
             setTargetRotation(previewView.display.rotation)
         }.build()
+
         val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
         cameraProviderFuture.addListener(Runnable {
             val cameraProvider = cameraProviderFuture.get()
             val camera = cameraProvider.bindToLifecycle(this, cameraSelector,imagePreview,imageCapture)
+            cameraControl = camera.cameraControl
+            cameraInfo = camera.cameraInfo
             previewView.preferredImplementationMode = PreviewView.ImplementationMode.TEXTURE_VIEW
             imagePreview.setSurfaceProvider(previewView.createSurfaceProvider(camera.cameraInfo))
+
         }, ContextCompat.getMainExecutor(requireContext()))
 
+    }
+
+    private fun toggleTorch() {
+        if (cameraInfo.torchState.value == TorchState.ON) {
+            cameraControl.enableTorch(false)
+        } else {
+            cameraControl.enableTorch(true)
+        }
     }
 
     companion object {
@@ -160,6 +174,5 @@ class CameraFragment : Fragment() {
             }
             return if (mediaDir != null && mediaDir.exists())mediaDir else appContext.filesDir
         }
-
     }
 }
