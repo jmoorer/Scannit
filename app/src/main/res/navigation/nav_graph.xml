@@ -9,7 +9,11 @@
         android:id="@+id/homeFragment"
         android:name="com.moor.scannit.ui.home.HomeFragment"
         android:label="Folders"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.moor.scannit.ui.SettingsFragment"
@@ -18,5 +22,14 @@
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.moor.scannit.ui.camera.CameraFragment"
-        tools:layout="@layout/fragment_camera" />
+        tools:layout="@layout/fragment_camera" >
+        <action
+            android:id="@+id/action_cameraFragment_to_previewActivity"
+            app:destination="@id/previewActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/previewActivity"
+        android:name="com.moor.scannit.ui.preview.PreviewActivity"
+        android:label="activity_preview"
+        tools:layout="@layout/activity_preview"/>
 </navigation>

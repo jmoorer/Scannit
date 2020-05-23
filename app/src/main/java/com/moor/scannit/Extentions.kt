@@ -3,11 +3,15 @@ package com.moor.scannit
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.media.ExifInterface
 import android.media.Image
+import android.net.Uri
+import android.provider.MediaStore
 import android.text.format.DateFormat
 import android.text.format.DateFormat.format
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 
 import java.util.*
 
@@ -29,4 +33,18 @@ fun ViewGroup.inflater(): LayoutInflater {
 }
 fun Date.toDateString(): String {
      return DateFormat.format("MM/dd/yyyy", this).toString()
+}
+fun Fragment.loadBitmap(uri: Uri): Bitmap {
+    var bitmap= MediaStore.Images.Media.getBitmap(requireContext().contentResolver,uri)
+    var exif= ExifInterface(uri.path)
+    val orientation: Int = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
+    val matrix = Matrix()
+    if (orientation == 6) {
+        matrix.postRotate(90f)
+    } else if (orientation == 3) {
+        matrix.postRotate(180f)
+    } else if (orientation == 8) {
+        matrix.postRotate(270f)
+    }
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }

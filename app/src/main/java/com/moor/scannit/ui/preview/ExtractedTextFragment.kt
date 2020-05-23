@@ -14,6 +14,7 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer
 import com.moor.scannit.R
+import com.moor.scannit.databinding.FragmentExtractedTextBinding
 import com.moor.scannit.ui.SpacesItemDecoration
 
 
@@ -31,8 +32,6 @@ class ExtractedTextFragment : Fragment() {
             val uri = it.getString(IMAGE_URI)
             image = FirebaseVisionImage.fromFilePath(requireContext(), Uri.parse(uri))
             detector = FirebaseVision.getInstance().onDeviceTextRecognizer
-
-
         }
     }
 
@@ -40,21 +39,18 @@ class ExtractedTextFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_extracted_text_list, container, false)
 
-        if (view is RecyclerView) {
-            detector.processImage(image)
-                .addOnSuccessListener { result ->
-                    view.adapter= ExtractedTextRecyclerViewAdapter(result.textBlocks)
-                    view.layoutManager = LinearLayoutManager(context)
-                    view.addItemDecoration(SpacesItemDecoration(16))
-                }
-                .addOnFailureListener { e ->
-                    print("")
-                }
-        }
+        val binding= FragmentExtractedTextBinding.inflate(inflater,container, false)
 
-        return view
+        detector.processImage(image)
+            .addOnSuccessListener { result ->
+                binding.extractedTextEditText.setText(result.textBlocks.joinToString("\n") { b -> b.text })
+            }
+            .addOnFailureListener { e ->
+                print("")
+            }
+
+        return binding.root
     }
 
 

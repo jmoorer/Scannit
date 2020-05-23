@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="3dp"
-    app:cardElevation="2dp">
-    <TextView
-        android:id="@+id/textBlock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</com.google.android.material.card.MaterialCardView>
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="2dp"
+        android:layout_margin="8dp">
+        <EditText
+            android:id="@+id/extracted_text_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:inputType="text|textNoSuggestions"/>
+    </com.google.android.material.card.MaterialCardView>
 
+</LinearLayout>

@@ -29,14 +29,14 @@ class ExtractedTextRecyclerViewAdapter(val values: MutableList<FirebaseVisionTex
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.textBlock.text=item.text
+       // holder.textBlock.text=item.text
 
     }
 
     override fun getItemCount(): Int = values.size
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val textBlock: TextView = view.textBlock
+       // val textBlock: TextView = view.textBlock
 
 
     }

@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -60,7 +62,10 @@ class CameraFragment : Fragment() {
             cameraCaptureButton.setOnClickListener {
                 takePicture()
             }
-            bar.replaceMenu(R.menu.menu_camera)
+            //bar.replaceMenu(R.menu.menu_camera)
+            flashCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                imageCapture.flashMode= if (isChecked) ImageCapture.FLASH_MODE_ON else ImageCapture.FLASH_MODE_OFF
+            }
         }
         if (allPermissionsGranted()) {
             previewView.post { startCamera() }
@@ -91,14 +96,9 @@ class CameraFragment : Fragment() {
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        // Setup image capture listener which is triggered after photo has
-        // been taken
-        if(binding.flashCheckbox.isChecked){
-            cameraControl.enableTorch(true)
-            imageCapture.flashMode=ImageCapture.FLASH_MODE_ON
-        }
-        imageCapture.takePicture(
-            outputOptions, ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageSavedCallback {
+
+
+        imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e("", "Photo capture failed: ${exc.message}", exc)
                 }
