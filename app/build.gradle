@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-kapt' // Required for annotation processing.
+apply plugin: 'io.objectbox' // Apply last.
 android {
 
     viewBinding {

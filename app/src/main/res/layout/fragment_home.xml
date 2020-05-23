@@ -12,31 +12,38 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:textSize="18sp"
 
-            android:text="All Folders"
-            android:id="@+id/folder_name_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+        <FrameLayout
             android:layout_weight="1"
-            />
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/folder_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginHorizontal="16dp"
+                />
+            <ImageView
+                android:visibility="invisible"
+                android:id="@+id/emptyView"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_open_folder"
+                />
+        </FrameLayout>
+
 
 
     </LinearLayout>
-
-    <io.github.yavski.fabspeeddial.FabSpeedDial
-        android:id="@+id/action_button"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/scan_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_qr_scan"
+        android:tint="@color/white"
         android:layout_gravity="bottom|end"
-        app:fabGravity="bottom_end"
-        app:fabMenu="@menu/menu_home"
-        app:miniFabBackgroundTint="@android:color/white"
-        app:miniFabDrawableTint="?attr/colorPrimaryDark"
-        app:miniFabTitleTextColor="?attr/colorPrimaryDark" />
+        android:layout_margin="16dp"
+        />
 </FrameLayout>

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.moor.scannit.ui.home.HomeFragment"
-        android:label="fragment_home"
+        android:label="Folders"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/settingsFragment"
@@ -18,6 +18,5 @@
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.moor.scannit.ui.camera.CameraFragment"
-        android:label="fragment_camera"
         tools:layout="@layout/fragment_camera" />
 </navigation>

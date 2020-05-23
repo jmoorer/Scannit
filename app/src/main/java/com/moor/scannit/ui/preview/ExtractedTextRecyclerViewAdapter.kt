@@ -9,8 +9,7 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.moor.scannit.R
 
 
-import com.moor.scannit.ui.preview.ExtractedTextFragment.OnListFragmentInteractionListener
-import com.moor.scannit.ui.preview.dummy.DummyContent.DummyItem
+
 
 import kotlinx.android.synthetic.main.fragment_extracted_text.view.*
 

@@ -12,10 +12,9 @@ import androidx.viewpager.widget.ViewPager
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.moor.scannit.R
 import com.moor.scannit.databinding.ActivityPreviewBinding
-import com.moor.scannit.ui.preview.dummy.DummyContent
 
-class PreviewActivity : AppCompatActivity(),
-    ExtractedTextFragment.OnListFragmentInteractionListener {
+
+class PreviewActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +46,5 @@ class PreviewActivity : AppCompatActivity(),
 
     }
 
-    override fun onListFragmentInteraction(item: DummyContent.DummyItem?) {
-        TODO("Not yet implemented")
-    }
+
 }
