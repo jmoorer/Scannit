@@ -13,6 +13,8 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.3'
         classpath "io.objectbox:objectbox-gradle-plugin:$objectboxVersion"
+        def nav_version = "2.3.0-beta01"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
 
 
     }

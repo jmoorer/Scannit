@@ -11,7 +11,9 @@ import android.text.format.DateFormat
 import android.text.format.DateFormat.format
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 
 import java.util.*
 
@@ -47,4 +49,8 @@ fun Fragment.loadBitmap(uri: Uri): Bitmap {
         matrix.postRotate(270f)
     }
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+}
+
+fun ImageView.load(uri: Uri){
+    Glide.with(this).load(uri).into(this)
 }

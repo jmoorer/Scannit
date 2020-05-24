@@ -6,27 +6,33 @@ import android.os.Bundle
 import android.view.*
 import android.widget.EditText
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.moor.scannit.FILENAME_FORMAT
 import com.moor.scannit.R
+import com.moor.scannit.data.Document
 import com.moor.scannit.data.Folder
 import com.moor.scannit.databinding.FragmentHomeBinding
+import com.moor.scannit.generateFileName
 import com.moor.scannit.ui.SpacesItemDecoration
+import com.moor.scannit.ui.camera.CameraViewModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 
-class HomeFragment : Fragment(), FolderAdapter.FolderAdapterCallback {
+class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
 
 
 
     private lateinit var binding: FragmentHomeBinding
     private  val viewModel:HomeViewModel by viewModels()
-    private  var folders= arrayListOf<Folder>()
-    private  val folderAdapter:FolderAdapter= FolderAdapter(folders)
+    private  val cameraViewModel: CameraViewModel by activityViewModels()
+    private  var documents= arrayListOf<Document>()
+    private  val documentAdapter:DocumentAdapter= DocumentAdapter(documents)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,14 +47,15 @@ class HomeFragment : Fragment(), FolderAdapter.FolderAdapterCallback {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater,container,false).apply {
             folderListView.apply {
-                adapter= folderAdapter.apply {
+                adapter= documentAdapter.apply {
                     listener= this@HomeFragment
                 }
                 layoutManager= GridLayoutManager(context,3)
                 addItemDecoration(SpacesItemDecoration(16))
             }
             scanButton.setOnClickListener {
-                findNavController().navigate(R.id.cameraFragment)
+                val action = HomeFragmentDirections.actionHomeFragmentToCameraFragment(0)
+                findNavController().navigate(action)
             }
         }
         setHasOptionsMenu(true)
@@ -59,9 +66,9 @@ class HomeFragment : Fragment(), FolderAdapter.FolderAdapterCallback {
         super.onActivityCreated(savedInstanceState)
         viewModel.getState().observe(viewLifecycleOwner, Observer { state->
             state?.let {
-                folders.clear()
-                if(state.folders.any()){
-                    folders.addAll(state.folders)
+                documents.clear()
+                if(state.documents.any()){
+                    documents.addAll(state.documents)
                     binding.folderListView.adapter?.notifyDataSetChanged()
 
                     binding.emptyView.visibility=View.INVISIBLE
@@ -69,9 +76,11 @@ class HomeFragment : Fragment(), FolderAdapter.FolderAdapterCallback {
                     binding.emptyView.visibility=View.VISIBLE
                 }
 
+
             }
 
         })
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -84,23 +93,26 @@ class HomeFragment : Fragment(), FolderAdapter.FolderAdapterCallback {
 
         when(item.itemId){
             R.id.action_create->{
-                renameFolder( Folder(create_date = Date()))
+                renameFolder(Document().apply {
+                    createDate = Date()
+                    name = ""
+                })
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
 
-    override fun onLongClick(folder: Folder, view: View) {
+    override fun onLongClick(document: Document, view: View) {
         PopupMenu(requireContext(), view).apply {
             setOnMenuItemClickListener{
                 when(it.itemId){
                     R.id.action_delete-> {
-                        confirmDelete(folder)
+                        confirmDelete(document)
                         true
                     }
                     R.id.action_rename->{
-                        renameFolder(folder)
+                        renameFolder(document)
                         true
                     }
                     else-> false
@@ -111,27 +123,32 @@ class HomeFragment : Fragment(), FolderAdapter.FolderAdapterCallback {
         }
     }
 
-    private fun confirmDelete(folder: Folder){
+    override fun onClick(document: Document, view: View) {
+        val action = HomeFragmentDirections.actionHomeFragmentToDocumentFragment(document.id)
+        findNavController().navigate(action)
+    }
+
+    private fun confirmDelete(document: Document){
         val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage("Are you sure you want to delete ${folder.name}?")
+        builder.setMessage("Are you sure you want to delete ${document.name}?")
         builder.setCancelable(false)
         builder.setPositiveButton("Yes"){ dialog, which ->
-           viewModel.deleteFolder(folder)
+           viewModel.deleteDocument(document)
         }
         builder.setNegativeButton("No",{_,a->})
         builder.show()
     }
-    private fun renameFolder(folder: Folder){
+    private fun renameFolder(document: Document){
         val editText= EditText(context);
-        editText.setText(folder.name)
+        editText.setText(document.name)
         val dialog = AlertDialog.Builder(context)
             .setMessage("Folder Name")
             .setView(editText)
             .setPositiveButton("OK") { _, i->
                 val name=editText.text.toString()
                 if(name.isNotEmpty()){
-                    folder.name= name
-                    viewModel.saveFolder(folder)
+                    document.name= name
+                    viewModel.saveDocument(document)
                 }
             }
             .setNegativeButton("Cancel", null)

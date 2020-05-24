@@ -8,11 +8,14 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.moor.scannit.ui.home.HomeFragment"
-        android:label="Folders"
-        tools:layout="@layout/fragment_home" >
+        android:label="Documents"
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_documentFragment"
+            app:destination="@id/documentFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -24,12 +27,43 @@
         android:name="com.moor.scannit.ui.camera.CameraFragment"
         tools:layout="@layout/fragment_camera" >
         <action
-            android:id="@+id/action_cameraFragment_to_previewActivity"
-            app:destination="@id/previewActivity" />
+            android:id="@+id/action_cameraFragment_to_imageProccessFragment"
+            app:destination="@id/imageProccessFragment" />
+        <argument
+            android:name="documentId"
+            app:argType="long" />
     </fragment>
     <activity
         android:id="@+id/previewActivity"
         android:name="com.moor.scannit.ui.preview.PreviewActivity"
         android:label="activity_preview"
         tools:layout="@layout/activity_preview"/>
+    <fragment
+        android:id="@+id/imageProccessFragment"
+        android:name="com.moor.scannit.ui.camera.ImageProcessFragment"
+        android:label="fragment_image_proccess"
+        tools:layout="@layout/fragment_image_process" >
+        <argument
+            android:name="uri"
+            app:argType="android.net.Uri" />
+        <action
+            android:id="@+id/action_imageProccessFragment_to_previewActivity"
+            app:destination="@id/previewActivity" />
+        <action
+            android:id="@+id/action_imageProccessFragment_to_documentFragment"
+            app:destination="@id/documentFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/documentFragment"
+        android:name="com.moor.scannit.ui.document.DocumentFragment"
+        tools:layout="@layout/fragment_document">
+        <argument
+            android:name="documentId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_documentFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
 </navigation>

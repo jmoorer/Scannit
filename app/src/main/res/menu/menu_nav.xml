@@ -2,6 +2,6 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/homeFragment" android:title="Folders" />
+    <item android:id="@+id/homeFragment" android:title="Documents" />
     <item android:id="@+id/settingsFragment" android:title="Settings"/>
 </menu>

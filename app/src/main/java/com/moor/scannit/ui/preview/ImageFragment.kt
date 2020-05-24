@@ -51,7 +51,7 @@ class ImageFragment : Fragment() {
             try {
 
                 val bmp = loadBitmap(uri)
-                val cnvs = Canvas(bmp)
+               // val cnvs = Canvas(bmp)
                 val paint = Paint()
                 image = FirebaseVisionImage.fromBitmap(bmp)
                 paint.color = Color.RED
@@ -60,7 +60,7 @@ class ImageFragment : Fragment() {
                 objectDetector.processImage(image).
                 addOnSuccessListener {objects->
                    objects.forEach{o->
-                       cnvs.drawRect(o.boundingBox,paint)
+                     //  cnvs.drawRect(o.boundingBox,paint)
                    }
                    binding.imageView.setImageBitmap(bmp)
                 }.

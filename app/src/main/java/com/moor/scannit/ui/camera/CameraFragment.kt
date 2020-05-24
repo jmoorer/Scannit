@@ -1,6 +1,7 @@
 package com.moor.scannit.ui.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,22 +19,25 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.common.util.concurrent.ListenableFuture
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentCameraBinding
+import com.moor.scannit.toBitmap
 import com.moor.scannit.ui.preview.PreviewActivity
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
 
 class CameraFragment : Fragment() {
     private lateinit var imageCapture: ImageCapture
-    private lateinit var outputDirectory: File
+
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var binding: FragmentCameraBinding
 
@@ -46,17 +50,23 @@ class CameraFragment : Fragment() {
     private lateinit var cameraControl: CameraControl
     private lateinit var cameraInfo: CameraInfo
 
+    private val viewModel:CameraViewModel by activityViewModels()
+    private val args:CameraFragmentArgs by navArgs()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-        outputDirectory = getOutputDirectory(requireContext())
+        viewModel.setDocument(args.documentId)
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        activity?.actionBar?.setDisplayShowTitleEnabled(false);
+
+
         binding = FragmentCameraBinding.inflate(inflater, container, false).apply {
             this@CameraFragment.previewView = previewView
             cameraCaptureButton.setOnClickListener {
@@ -89,28 +99,21 @@ class CameraFragment : Fragment() {
             }, 100)
         }
 
-        val photoFile = File(
-            outputDirectory,
-            SimpleDateFormat(FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg")
-
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
 
 
-        imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageSavedCallback {
+        imageCapture.takePicture(ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageCapturedCallback() {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e("", "Photo capture failed: ${exc.message}", exc)
                 }
 
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    cameraControl.enableTorch(false)
-                    val savedUri = Uri.fromFile(photoFile)
-                    val intent = Intent(context,
-                        PreviewActivity::class.java)
-                    intent.putExtra("image",savedUri.toString())
-                    startActivity(intent)
-
+                @SuppressLint("UnsafeExperimentalUsageError")
+                override fun onCaptureSuccess(imageProxy: ImageProxy) {
+                    val rotation = imageProxy.imageInfo.rotationDegrees
+                    val bitmap = imageProxy.image?.toBitmap(rotation)
+                    bitmap?.let { viewModel.setImage(it) }
+                    findNavController().navigate(R.id.imageProccessFragment)
+                    super.onCaptureSuccess(imageProxy)
                 }
             })
     }
@@ -131,8 +134,9 @@ class CameraFragment : Fragment() {
         ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
     }
 
+    @SuppressLint("RestrictedApi")
     private fun startCamera() {
-
+        CameraX.unbindAll()
         imageCapture = ImageCapture.Builder().apply {
             setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
         }.build()
@@ -163,16 +167,5 @@ class CameraFragment : Fragment() {
         }
     }
 
-    companion object {
 
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-
-        fun getOutputDirectory(context: Context): File {
-            val appContext = context.applicationContext
-            val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
-                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() }
-            }
-            return if (mediaDir != null && mediaDir.exists())mediaDir else appContext.filesDir
-        }
-    }
 }
