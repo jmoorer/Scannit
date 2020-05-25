@@ -30,7 +30,6 @@ class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
 
     private lateinit var binding: FragmentHomeBinding
     private  val viewModel:HomeViewModel by viewModels()
-    private  val cameraViewModel: CameraViewModel by activityViewModels()
     private  var documents= arrayListOf<Document>()
     private  val documentAdapter:DocumentAdapter= DocumentAdapter(documents)
 
@@ -50,7 +49,7 @@ class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
                 adapter= documentAdapter.apply {
                     listener= this@HomeFragment
                 }
-                layoutManager= GridLayoutManager(context,3)
+                layoutManager= GridLayoutManager(context,2)
                 addItemDecoration(SpacesItemDecoration(16))
             }
             scanButton.setOnClickListener {
@@ -69,14 +68,11 @@ class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
                 documents.clear()
                 if(state.documents.any()){
                     documents.addAll(state.documents)
-                    binding.folderListView.adapter?.notifyDataSetChanged()
-
                     binding.emptyView.visibility=View.INVISIBLE
                 }else{
                     binding.emptyView.visibility=View.VISIBLE
                 }
-
-
+                documentAdapter.notifyDataSetChanged()
             }
 
         })

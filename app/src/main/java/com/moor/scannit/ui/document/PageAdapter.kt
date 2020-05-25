@@ -1,8 +1,10 @@
 package com.moor.scannit.ui.document
 
 import android.net.Uri
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.moor.scannit.data.Document
 import com.moor.scannit.data.Page
 import com.moor.scannit.databinding.ItemPageBinding
 import com.moor.scannit.inflater
@@ -10,6 +12,13 @@ import com.moor.scannit.load
 import com.moor.scannit.ui.BoundViewHolder
 
 class PageAdapter(val pages:List<Page>):RecyclerView.Adapter<BoundViewHolder<ItemPageBinding>>() {
+
+    interface  PageAdapterCallback{
+        fun  onLongClick(page: Page, view: View)
+        fun onClick(page: Page, view: View)
+    }
+
+    var listener:PageAdapterCallback?=null
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -23,6 +32,8 @@ class PageAdapter(val pages:List<Page>):RecyclerView.Adapter<BoundViewHolder<Ite
           val page= pages[position]
           holder.binding.apply {
               previewImageView.load(Uri.parse(page.uri))
+              pageTextView.text="${page.number}"
+              root.setOnClickListener {v-> listener?.onClick(page,v) }
           }
     }
 }

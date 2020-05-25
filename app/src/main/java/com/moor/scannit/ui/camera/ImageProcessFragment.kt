@@ -19,6 +19,7 @@ import com.isseiaoki.simplecropview.callback.LoadCallback
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentImageProcessBinding
 import com.moor.scannit.ui.preview.PreviewActivity
+import kotlinx.android.synthetic.main.fragment_image_process.*
 import java.io.File
 import java.io.FileOutputStream
 
@@ -39,7 +40,10 @@ class ImageProcessFragment : Fragment(){
         viewModel.getImage().observe(viewLifecycleOwner, Observer {bitmap->
             binding.cropImageView.apply {
                 imageBitmap=bitmap
+
             }
+            binding.cropImageView. setCropMode(CropImageView.CropMode.FREE)
+
         })
     }
 

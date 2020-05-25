@@ -41,7 +41,7 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
             generateFileName() + ".jpg")
 
         val output = FileOutputStream(photoFile)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, output)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
         output.flush()
         output.close()
 

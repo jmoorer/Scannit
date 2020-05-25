@@ -65,5 +65,24 @@
         <action
             android:id="@+id/action_documentFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_documentFragment_to_pageFragment"
+            app:destination="@id/pageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/pageFragment"
+        android:name="com.moor.scannit.ui.document.PageFragment"
+        android:label="PageFragment" >
+        <action
+            android:id="@+id/action_pageFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_pageFragment_to_extractedTextFragment"
+            app:destination="@id/extractedTextFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/extractedTextFragment"
+        android:name="com.moor.scannit.ui.preview.ExtractedTextFragment"
+        android:label="Extracted Text"
+        tools:layout="@layout/fragment_extracted_text_list" />
 </navigation>

@@ -2,40 +2,32 @@ package com.moor.scannit.ui.camera
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
+import android.view.*
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.common.util.concurrent.ListenableFuture
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentCameraBinding
+import com.moor.scannit.supportActionBar
 import com.moor.scannit.toBitmap
-import com.moor.scannit.ui.preview.PreviewActivity
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
+import java.io.FileOutputStream
 
 
-
-
-class CameraFragment : Fragment() {
+class CameraFragment() : Fragment() {
     private lateinit var imageCapture: ImageCapture
 
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
@@ -49,14 +41,16 @@ class CameraFragment : Fragment() {
 
     private lateinit var cameraControl: CameraControl
     private lateinit var cameraInfo: CameraInfo
+    private var ocrMode=false
 
     private val viewModel:CameraViewModel by activityViewModels()
     private val args:CameraFragmentArgs by navArgs()
-
+    var menu: Menu?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         viewModel.setDocument(args.documentId)
+        setHasOptionsMenu(true)
     }
 
 
@@ -67,6 +61,7 @@ class CameraFragment : Fragment() {
     ): View? {
 
 
+        supportActionBar?.title=null
         binding = FragmentCameraBinding.inflate(inflater, container, false).apply {
             this@CameraFragment.previewView = previewView
             cameraCaptureButton.setOnClickListener {
@@ -111,8 +106,19 @@ class CameraFragment : Fragment() {
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
                     val rotation = imageProxy.imageInfo.rotationDegrees
                     val bitmap = imageProxy.image?.toBitmap(rotation)
-                    bitmap?.let { viewModel.setImage(it) }
-                    findNavController().navigate(R.id.imageProccessFragment)
+                    if(ocrMode){
+                        val temp=File.createTempFile("images",".jpg",requireContext().cacheDir)
+                        val output = FileOutputStream(temp)
+                        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                        output.flush()
+                        output.close()
+                        val uri = Uri.fromFile(temp)
+                        findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to uri.toString()))
+
+                    }else{
+                        bitmap?.let { viewModel.setImage(it) }
+                        findNavController().navigate(R.id.imageProccessFragment)
+                    }
                     super.onCaptureSuccess(imageProxy)
                 }
             })
@@ -159,13 +165,31 @@ class CameraFragment : Fragment() {
 
     }
 
-    private fun toggleTorch() {
-        if (cameraInfo.torchState.value == TorchState.ON) {
-            cameraControl.enableTorch(false)
-        } else {
-            cameraControl.enableTorch(true)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_camera,menu)
+        this.menu = menu;
+        checkMode()
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    fun checkMode(){
+        val item = menu?.findItem(R.id.action_ocr)
+        if(ocrMode){
+            item?.icon= resources.getDrawable(R.drawable.ic_ocr_on)
+        }else{
+            item?.icon= resources.getDrawable(R.drawable.ic_ocr_off)
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.action_ocr->{
+                ocrMode=!ocrMode
+                checkMode()
+                return true
+            }
+        }
+        return false
+    }
 
 }

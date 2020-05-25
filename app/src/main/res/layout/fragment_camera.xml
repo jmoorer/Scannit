@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/black"
     tools:context=".ui.camera.CameraFragment">
 
         <androidx.camera.view.PreviewView
@@ -35,7 +35,7 @@
             android:layout_gravity="bottom|center"
             android:tint="@color/white"
             app:fabSize="auto"
-            app:fabCustomSize="60dp"
+            app:fabCustomSize="85dp"
             app:maxImageSize="40dp"
             android:layout_margin="48dp"
             android:id="@+id/camera_capture_button"
