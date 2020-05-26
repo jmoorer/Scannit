@@ -7,8 +7,8 @@
     android:orientation="vertical"
     tools:context=".ui.camera.ImageProcessFragment">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <com.isseiaoki.simplecropview.CropImageView
+        android:id="@+id/cropImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
@@ -16,8 +16,19 @@
         android:paddingTop="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
-        android:scaleType="fitCenter"
-        />
+        custom:scv_background_color="@color/white"
+        custom:scv_crop_mode="fit_image"
+        custom:scv_frame_color="@color/colorAccent"
+        custom:scv_frame_stroke_weight="1dp"
+        custom:scv_guide_color="@color/colorAccent"
+        custom:scv_guide_show_mode="show_always"
+        custom:scv_guide_stroke_weight="1dp"
+        custom:scv_handle_color="@color/colorAccent"
+        custom:scv_handle_show_mode="show_always"
+        custom:scv_handle_size="14dp"
+        custom:scv_min_frame_size="50dp"
+
+        custom:scv_touch_padding="8dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,38 +36,31 @@
         android:layout_weight="1"
         android:background="@color/colorPrimary">
 
-        <!--        <ImageButton-->
-        <!--            android:id="@+id/filter_button"-->
-        <!--            android:layout_width="40dp"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            android:background="@null"-->
-        <!--            android:scaleType="fitCenter"-->
-        <!--            android:src="@drawable/ic_filter"-->
-        <!--            tools:layout_editor_absoluteX="176dp" />-->
-
         <ImageButton
-            android:id="@+id/crop_button"
+            android:id="@+id/rotate_left_button"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:background="@null"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_crop"
-            custom:layout_constraintEnd_toStartOf="@+id/ocr_button"
+            android:src="@drawable/ic_rotate_left"
+            custom:layout_constraintBottom_toBottomOf="parent"
+            custom:layout_constraintEnd_toStartOf="@+id/rotate_right_button"
             custom:layout_constraintHorizontal_bias="0.5"
             custom:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="-16dp" />
+            custom:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/ocr_button"
+            android:id="@+id/rotate_right_button"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:background="@null"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_ocr_on"
+            android:src="@drawable/ic_rotate_right"
+            custom:layout_constraintBottom_toBottomOf="parent"
             custom:layout_constraintEnd_toStartOf="@+id/done_button"
             custom:layout_constraintHorizontal_bias="0.5"
-            custom:layout_constraintStart_toEndOf="@+id/crop_button"
-            tools:layout_editor_absoluteY="0dp" />
+            custom:layout_constraintStart_toEndOf="@+id/rotate_left_button"
+            custom:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/done_button"
@@ -65,9 +69,10 @@
             android:background="@null"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_check"
+            custom:layout_constraintBottom_toBottomOf="parent"
             custom:layout_constraintEnd_toEndOf="parent"
             custom:layout_constraintHorizontal_bias="0.5"
-            custom:layout_constraintStart_toEndOf="@+id/ocr_button"
-            tools:layout_editor_absoluteY="0dp" />
+            custom:layout_constraintStart_toEndOf="@+id/rotate_right_button"
+            custom:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

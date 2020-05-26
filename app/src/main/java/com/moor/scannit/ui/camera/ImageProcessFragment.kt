@@ -1,27 +1,24 @@
 package com.moor.scannit.ui.camera
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import com.isseiaoki.simplecropview.CropImageView
-import com.isseiaoki.simplecropview.callback.LoadCallback
-
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentImageProcessBinding
-import com.moor.scannit.ui.preview.PreviewActivity
-import kotlinx.android.synthetic.main.fragment_image_process.*
+import com.moor.scannit.generateFileName
+import com.moor.scannit.getOutputDirectory
+import com.uvstudio.him.photofilterlibrary.PhotoFilter
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URI
 
 
 class ImageProcessFragment : Fragment(){
@@ -38,12 +35,25 @@ class ImageProcessFragment : Fragment(){
         super.onActivityCreated(savedInstanceState)
 
         viewModel.getImage().observe(viewLifecycleOwner, Observer {bitmap->
-            binding.cropImageView.apply {
-                imageBitmap=bitmap
+            binding.apply {
+                imageView.setImageBitmap(bitmap)
+                doneButton.setOnClickListener {
+                    val documentId=viewModel.saveCroppedImage(bitmap)
+                    val action= ImageProcessFragmentDirections.actionImageProccessFragmentToDocumentFragment(documentId)
+                    findNavController().navigate(action)
+                }
+
+                ocrButton.setOnClickListener {
+
+                    val temp=File.createTempFile("images",".jpg",requireContext().cacheDir)
+                    val output = FileOutputStream(temp)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                    output.flush()
+                    output.close()
+                    findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to Uri.fromFile(temp).toString() ))
+                }
 
             }
-            binding.cropImageView. setCropMode(CropImageView.CropMode.FREE)
-
         })
     }
 
@@ -53,23 +63,13 @@ class ImageProcessFragment : Fragment(){
     ): View? {
 
         binding = FragmentImageProcessBinding.inflate(inflater,container,false).apply {
-            cropImageView.apply {
-                setCropMode(CropImageView.CropMode.FREE)
-            }
-            rotateLeftButton.setOnClickListener {
-                cropImageView.rotateImage(CropImageView.RotateDegrees.ROTATE_M90D)
-            }
-
-            rotateRightButton.setOnClickListener {
-                cropImageView.rotateImage(CropImageView.RotateDegrees.ROTATE_90D)
-            }
 
             cropButton.setOnClickListener {
-                val bmp=cropImageView.croppedBitmap
-                val documentId=viewModel.saveCroppedImage(bmp)
-                val action= ImageProcessFragmentDirections.actionImageProccessFragmentToDocumentFragment(documentId)
-                findNavController().navigate(action)
+                findNavController().navigate(R.id.cropFragment)
             }
+
+
+
         }
 
 

@@ -35,7 +35,6 @@ private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
 class ScanActivity : AppCompatActivity() {
 
-    private lateinit var analyzer: FreezeAnalyzer
     private lateinit var imageAnalysis: ImageAnalysis
     private lateinit var imagePreview: Preview
     private lateinit var previewView: PreviewView

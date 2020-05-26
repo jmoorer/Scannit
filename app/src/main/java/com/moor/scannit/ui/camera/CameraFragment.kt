@@ -4,10 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Rect
+import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.util.Size
 import android.view.*
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -23,11 +26,13 @@ import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentCameraBinding
 import com.moor.scannit.supportActionBar
 import com.moor.scannit.toBitmap
+import com.moor.scannit.ui.views.ObjectAnalyzer
 import java.io.File
 import java.io.FileOutputStream
 
 
 class CameraFragment() : Fragment() {
+    private lateinit var imageAnalyzer: ImageAnalysis
     private lateinit var imageCapture: ImageCapture
 
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
@@ -85,6 +90,7 @@ class CameraFragment() : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("RestrictedApi")
     private fun takePicture() {
         binding.apply {
             shutter.visibility=View.VISIBLE
@@ -93,9 +99,6 @@ class CameraFragment() : Fragment() {
                 shutter.visibility= View.GONE
             }, 100)
         }
-
-
-
 
         imageCapture.takePicture(ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageCapturedCallback() {
                 override fun onError(exc: ImageCaptureException) {
@@ -106,19 +109,8 @@ class CameraFragment() : Fragment() {
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
                     val rotation = imageProxy.imageInfo.rotationDegrees
                     val bitmap = imageProxy.image?.toBitmap(rotation)
-                    if(ocrMode){
-                        val temp=File.createTempFile("images",".jpg",requireContext().cacheDir)
-                        val output = FileOutputStream(temp)
-                        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, output)
-                        output.flush()
-                        output.close()
-                        val uri = Uri.fromFile(temp)
-                        findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to uri.toString()))
-
-                    }else{
-                        bitmap?.let { viewModel.setImage(it) }
-                        findNavController().navigate(R.id.imageProccessFragment)
-                    }
+                    bitmap?.let { viewModel.setImage(it) }
+                    findNavController().navigate(R.id.imageProccessFragment)
                     super.onCaptureSuccess(imageProxy)
                 }
             })
@@ -152,10 +144,17 @@ class CameraFragment() : Fragment() {
             setTargetRotation(previewView.display.rotation)
         }.build()
 
+        imageAnalyzer = ImageAnalysis.Builder().apply {
+            setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+
+        }.build()
+
+
+
         val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
         cameraProviderFuture.addListener(Runnable {
             val cameraProvider = cameraProviderFuture.get()
-            val camera = cameraProvider.bindToLifecycle(this, cameraSelector,imagePreview,imageCapture)
+            val camera = cameraProvider.bindToLifecycle(this, cameraSelector,imagePreview,imageCapture, imageAnalyzer)
             cameraControl = camera.cameraControl
             cameraInfo = camera.cameraInfo
             previewView.preferredImplementationMode = PreviewView.ImplementationMode.TEXTURE_VIEW

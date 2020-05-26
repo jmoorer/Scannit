@@ -33,11 +33,6 @@
             android:name="documentId"
             app:argType="long" />
     </fragment>
-    <activity
-        android:id="@+id/previewActivity"
-        android:name="com.moor.scannit.ui.preview.PreviewActivity"
-        android:label="activity_preview"
-        tools:layout="@layout/activity_preview"/>
     <fragment
         android:id="@+id/imageProccessFragment"
         android:name="com.moor.scannit.ui.camera.ImageProcessFragment"
@@ -47,13 +42,16 @@
             android:name="uri"
             app:argType="android.net.Uri" />
         <action
-            android:id="@+id/action_imageProccessFragment_to_previewActivity"
-            app:destination="@id/previewActivity" />
-        <action
             android:id="@+id/action_imageProccessFragment_to_documentFragment"
             app:destination="@id/documentFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_imageProccessFragment_to_cropFragment"
+            app:destination="@id/cropFragment" />
+        <action
+            android:id="@+id/action_imageProccessFragment_to_imageFilterFragment"
+            app:destination="@id/imageFilterFragment" />
     </fragment>
     <fragment
         android:id="@+id/documentFragment"
@@ -85,4 +83,13 @@
         android:name="com.moor.scannit.ui.preview.ExtractedTextFragment"
         android:label="Extracted Text"
         tools:layout="@layout/fragment_extracted_text_list" />
+    <fragment
+        android:id="@+id/cropFragment"
+        android:name="com.moor.scannit.ui.camera.CropFragment"
+        android:label="CropFragment" />
+    <fragment
+        android:id="@+id/imageFilterFragment"
+        android:name="com.moor.scannit.ui.camera.ImageFilterFragment"
+        android:label="fragment_image_filter"
+        tools:layout="@layout/fragment_image_filter" />
 </navigation>
