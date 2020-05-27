@@ -1,37 +1,49 @@
 package com.moor.scannit.ui.home
 
 
+import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.*
 import android.widget.EditText
 import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
-import com.moor.scannit.FILENAME_FORMAT
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.moor.scannit.R
 import com.moor.scannit.data.Document
-import com.moor.scannit.data.Folder
 import com.moor.scannit.databinding.FragmentHomeBinding
-import com.moor.scannit.generateFileName
+import com.moor.scannit.getRealPathFromUri
 import com.moor.scannit.ui.SpacesItemDecoration
 import com.moor.scannit.ui.camera.CameraViewModel
-import java.text.SimpleDateFormat
 import java.util.*
 
 
 class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
 
 
-
+    private val RESULT_LOAD_IMAGE: Int=101
     private lateinit var binding: FragmentHomeBinding
     private  val viewModel:HomeViewModel by viewModels()
+    private val cameraViewModel: CameraViewModel by activityViewModels()
     private  var documents= arrayListOf<Document>()
     private  val documentAdapter:DocumentAdapter= DocumentAdapter(documents)
+    private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    private val REQUEST_CODE_PERMISSIONS = 10
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,12 +61,29 @@ class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
                 adapter= documentAdapter.apply {
                     listener= this@HomeFragment
                 }
-                layoutManager= GridLayoutManager(context,2)
-                addItemDecoration(SpacesItemDecoration(16))
+                //layoutManager= GridLayoutManager(context,3)
+                layoutManager = LinearLayoutManager(requireContext())
+                addItemDecoration(DividerItemDecoration(context,DividerItemDecoration.VERTICAL))
             }
             scanButton.setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToCameraFragment(0)
                 findNavController().navigate(action)
+            }
+            bar.setOnMenuItemClickListener { item ->
+                when(item.itemId){
+                    R.id.action_open->{
+                        cameraViewModel.setDocument(0)
+                        if(allPermissionsGranted()){
+                            pickImage()
+                        }else{
+                            requestPermissions(
+                                REQUIRED_PERMISSIONS,
+                                REQUEST_CODE_PERMISSIONS
+                            )
+                        }
+                    }
+                }
+                true
             }
         }
         setHasOptionsMenu(true)
@@ -85,19 +114,14 @@ class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
 
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when(item.itemId){
-            R.id.action_create->{
-                renameFolder(Document().apply {
-                    createDate = Date()
-                    name = ""
-                })
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+               pickImage()
             }
         }
-        return super.onOptionsItemSelected(item)
     }
-
 
     override fun onLongClick(document: Document, view: View) {
         PopupMenu(requireContext(), view).apply {
@@ -152,5 +176,25 @@ class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
         dialog.show();
     }
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            val selectedImage: Uri = data.data!!
+            val path= getRealPathFromUri(selectedImage)
+
+            cameraViewModel.setImage(BitmapFactory.decodeFile(path))
+            findNavController().navigate(R.id.imageProccessFragment)
+        }
+    }
+
+    private  fun pickImage(){
+        val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(i, RESULT_LOAD_IMAGE)
+    }
+
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+    }
 
 }

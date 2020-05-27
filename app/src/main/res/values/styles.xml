@@ -6,16 +6,19 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="actionMenuTextColor">@color/white</item>
+        <item name="actionMenuTextColor">@color/icons</item>
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <item name="android:windowTranslucentNavigation">true</item>
 <!--        <item name="android:actionBarStyle">@style/MyActionBarStyle</item>-->
 <!--        <item name="android:textColor">?android:attr/textColorPrimary</item>-->
 <!--        <item name="android:actionBarStyle">@style/MyTheme.ActionBar</item>-->
-        <item name="android:actionBarWidgetTheme">@style/MyTheme.ActionBarWidget</item>
+<!--        <item name="android:actionBarWidgetTheme">@style/MyTheme.ActionBarWidget</item>-->
     </style>
     <style name="MyTheme.ActionBarWidget"
         parent="android:Theme.Holo.Light">
         <item name="android:popupMenuStyle">@android:style/Widget.Holo.Light.PopupMenu</item>
         <item name="android:dropDownListViewStyle">@android:style/Widget.Holo.Light.ListView.DropDown</item>
     </style>
+
 
 </resources>

@@ -2,6 +2,7 @@ package com.moor.scannit.ui
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.WindowManager
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -26,14 +27,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         navController = findNavController(R.id.nav_host)
-        val drawerLayout= findViewById<DrawerLayout>(R.id.drawer)
-        appBarConfiguration = AppBarConfiguration(navController.graph,drawerLayout)
-
-        findViewById<NavigationView>(R.id.nav_view)
-            .setupWithNavController(navController)
+      //  val drawerLayout= findViewById<DrawerLayout>(R.id.drawer)
+        appBarConfiguration = AppBarConfiguration(navController.graph)
+//
+//        findViewById<NavigationView>(R.id.nav_view)
+//            .setupWithNavController(navController)
         setupActionBarWithNavController(navController,appBarConfiguration)
 
         FirebaseApp.initializeApp(this)
+
+            window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
 
 
     }

@@ -7,13 +7,10 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.moor.scannit.FILENAME_FORMAT
-import com.moor.scannit.R
+import com.moor.scannit.*
 import com.moor.scannit.data.Document
 import com.moor.scannit.data.ObjectBox
 import com.moor.scannit.data.Page
-import com.moor.scannit.generateFileName
-import com.moor.scannit.getOutputDirectory
 import io.objectbox.Box
 import io.objectbox.BoxStore.context
 import io.objectbox.kotlin.boxFor
@@ -36,9 +33,7 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
 
     fun saveCroppedImage(bitmap: Bitmap): Long {
 
-        val photoFile = File(
-            getOutputDirectory(context),
-            generateFileName() + ".jpg")
+        val photoFile = File(context.scanFolder, generateFileName() + ".jpg")
 
         val output = FileOutputStream(photoFile)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
@@ -72,6 +67,8 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
     fun saveDocument(document: Document){
         documentBox.put(document)
     }
+
+
 
 
 }

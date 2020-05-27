@@ -4,8 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -13,6 +15,7 @@ import android.util.Log
 import android.util.Size
 import android.view.*
 import androidx.camera.core.*
+import androidx.camera.extensions.BokehImageCaptureExtender
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -65,7 +68,6 @@ class CameraFragment() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-
         supportActionBar?.title=null
         binding = FragmentCameraBinding.inflate(inflater, container, false).apply {
             this@CameraFragment.previewView = previewView
@@ -73,7 +75,7 @@ class CameraFragment() : Fragment() {
                 takePicture()
             }
             //bar.replaceMenu(R.menu.menu_camera)
-            flashCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+            flashCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 imageCapture.flashMode= if (isChecked) ImageCapture.FLASH_MODE_ON else ImageCapture.FLASH_MODE_OFF
             }
         }
@@ -135,8 +137,10 @@ class CameraFragment() : Fragment() {
     @SuppressLint("RestrictedApi")
     private fun startCamera() {
         CameraX.unbindAll()
+        var bokehImageCapture:BokehImageCaptureExtender
         imageCapture = ImageCapture.Builder().apply {
             setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+             bokehImageCapture = BokehImageCaptureExtender.create(this)
         }.build()
 
         imagePreview = Preview.Builder().apply {
@@ -146,12 +150,15 @@ class CameraFragment() : Fragment() {
 
         imageAnalyzer = ImageAnalysis.Builder().apply {
             setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-
         }.build()
 
-
-
         val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+        if (bokehImageCapture.isExtensionAvailable(cameraSelector)) {
+            // Enable the extension if available.
+            bokehImageCapture.enableExtension(cameraSelector)
+        }
+
+
         cameraProviderFuture.addListener(Runnable {
             val cameraProvider = cameraProviderFuture.get()
             val camera = cameraProvider.bindToLifecycle(this, cameraSelector,imagePreview,imageCapture, imageAnalyzer)
@@ -159,36 +166,9 @@ class CameraFragment() : Fragment() {
             cameraInfo = camera.cameraInfo
             previewView.preferredImplementationMode = PreviewView.ImplementationMode.TEXTURE_VIEW
             imagePreview.setSurfaceProvider(previewView.createSurfaceProvider(camera.cameraInfo))
-
         }, ContextCompat.getMainExecutor(requireContext()))
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_camera,menu)
-        this.menu = menu;
-        checkMode()
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    fun checkMode(){
-        val item = menu?.findItem(R.id.action_ocr)
-        if(ocrMode){
-            item?.icon= resources.getDrawable(R.drawable.ic_ocr_on)
-        }else{
-            item?.icon= resources.getDrawable(R.drawable.ic_ocr_off)
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.action_ocr->{
-                ocrMode=!ocrMode
-                checkMode()
-                return true
-            }
-        }
-        return false
-    }
 
 }

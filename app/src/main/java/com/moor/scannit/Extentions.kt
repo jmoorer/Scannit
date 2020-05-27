@@ -1,13 +1,15 @@
 package com.moor.scannit
 
 
+import android.content.Context
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
+import android.database.Cursor
+import android.graphics.*
+import android.graphics.pdf.PdfDocument
 import android.media.ExifInterface
 import android.media.Image
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.format.DateFormat
 import android.text.format.DateFormat.format
@@ -18,6 +20,10 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.moor.scannit.data.Document
+
+import java.io.File
+import java.io.FileOutputStream
 
 import java.util.*
 
@@ -33,6 +39,21 @@ fun Image.toBitmap(rotationDegrees: Int): Bitmap {
     matrix.postRotate(rotationDegrees.toFloat())
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }
+
+fun Fragment.getRealPathFromUri(contentUri: Uri): String? {
+    var cursor: Cursor? = null
+    return try {
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        cursor = context?.contentResolver?.query(contentUri, proj, null, null, null)
+        assert(cursor != null)
+        val column_index = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor?.moveToFirst()
+        cursor?.getString(column_index!!)
+    } finally {
+        cursor?.close()
+    }
+}
+
 
 fun ViewGroup.inflater(): LayoutInflater {
     return LayoutInflater.from(this.context)
@@ -71,3 +92,76 @@ val Int.dp: Int
 
 val Float.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+
+val Context.exportFolder
+    get() = File(filesDir,"exports").apply {
+        if(exists())mkdirs();
+    }
+val Context.scanFolder
+    get() = File(filesDir,"scans").apply { mkdir() }
+
+
+fun Uri.rotation(): Float {
+    val exif= ExifInterface(path)
+    return when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
+        6 -> 90f
+        3 -> 180f
+        8 -> 270f
+        else -> 0f
+    }
+}
+fun Context.loadBitmap(uri: Uri): Bitmap {
+    val bitmap= MediaStore.Images.Media.getBitmap(contentResolver,uri)
+    val degrees= uri.rotation()
+    val matrix = Matrix()
+    matrix.postRotate(degrees)
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+}
+
+fun Context.generatePdf(documet: Document): File {
+    //val doc = Document()
+    try {
+        //create instance of PdfWriter class
+        val file = File(exportFolder,documet.name+".pdf")
+       // PdfWriter.getInstance(doc, FileOutputStream(file))
+
+        //open the document for writing
+        //doc.open()
+        //doc.addTitle(documet.name)
+
+        var doc= PdfDocument()
+        documet.pages.forEach { page->
+            var bitmap=loadBitmap(Uri.parse(page.uri))
+//            val stream= ByteArrayOutputStream()
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            var pi= PdfDocument.PageInfo.Builder(bitmap.width,bitmap.height,page.number).create()
+            var pg= doc.startPage(pi)
+            var canvas= pg.canvas
+            var paint= Paint().apply {
+                color = Color.parseColor("#FFFFFF")
+            }
+            canvas.drawPaint(paint)
+
+            bitmap= Bitmap.createScaledBitmap(bitmap,bitmap.width,bitmap.height,true)
+            paint.color=Color.BLUE
+
+            canvas.drawBitmap(bitmap,0f,0f,null)
+
+            doc.finishPage(pg)
+
+        }
+
+        doc.writeTo(FileOutputStream(file))
+        var x= file.exists()
+        doc.close()
+
+        return file
+
+
+    }
+    catch (e: Exception){
+        //if anything goes wrong causing exception, get and show exception message
+        throw e
+    }
+
+}

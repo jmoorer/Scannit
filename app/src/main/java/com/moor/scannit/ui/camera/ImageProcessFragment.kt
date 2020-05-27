@@ -13,8 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentImageProcessBinding
-import com.moor.scannit.generateFileName
-import com.moor.scannit.getOutputDirectory
+
 import com.uvstudio.him.photofilterlibrary.PhotoFilter
 import java.io.File
 import java.io.FileOutputStream

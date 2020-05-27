@@ -6,11 +6,13 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="60"
-        app:srcCompat="@drawable/ic_folder" />
+        android:src="@drawable/ic_file"
+        android:tint="@color/colorPrimaryDark"
+         />
 
     <TextView
         android:id="@+id/name_text_view"
