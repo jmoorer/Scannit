@@ -45,6 +45,10 @@ class HomeViewModel:ViewModel() {
     fun deleteDocument(document: Document){
         documentBox.remove(document)
     }
+    fun deleteDocuments(ids:LongArray){
+        documentBox.remove(*ids)
+    }
+
 
 
 

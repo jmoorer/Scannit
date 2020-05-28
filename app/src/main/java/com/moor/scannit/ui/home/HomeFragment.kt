@@ -6,14 +6,12 @@ import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
 import android.widget.EditText
-import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,18 +19,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.moor.scannit.R
 import com.moor.scannit.data.Document
 import com.moor.scannit.databinding.FragmentHomeBinding
 import com.moor.scannit.getRealPathFromUri
-import com.moor.scannit.ui.SpacesItemDecoration
+import com.moor.scannit.ui.AdapterCallback
 import com.moor.scannit.ui.camera.CameraViewModel
-import java.util.*
 
 
-class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
+class HomeFragment : Fragment(), AdapterCallback<Document> {
 
 
     private val RESULT_LOAD_IMAGE: Int=101
@@ -124,23 +120,47 @@ class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
     }
 
     override fun onLongClick(document: Document, view: View) {
-        PopupMenu(requireContext(), view).apply {
-            setOnMenuItemClickListener{
-                when(it.itemId){
-                    R.id.action_delete-> {
-                        confirmDelete(document)
-                        true
-                    }
-                    R.id.action_rename->{
-                        renameFolder(document)
-                        true
-                    }
-                    else-> false
-                }
-            }
-            inflate(R.menu.menu_action_home)
-            show()
-        }
+
+
+          PrimaryActionModeCallback().also {callback->
+               callback.onActionItemClickListener= object : PrimaryActionModeCallback.OnActionItemClickListener {
+                   override fun onActionItemClick(item: MenuItem) {
+                       when(item.itemId){
+                           R.id.action_delete->{
+                               val ids= documentAdapter.selectedIds
+                               val builder = AlertDialog.Builder(requireContext())
+                               builder.setMessage("Are you sure you want to delete ${ids.size} document(s) ?")
+                               builder.setCancelable(false)
+                               builder.setPositiveButton("Yes"){ dialog, which ->
+                                   viewModel.deleteDocuments(ids.toLongArray())
+                               }
+                               builder.setNegativeButton("No",{_,a->})
+                               builder.setOnDismissListener {
+                                   callback.finishActionMode()
+                               }
+                               builder.show()
+
+                           }
+                       }
+                   }
+
+                   override fun onDestroyActionMode() {
+                      documentAdapter.canEdit=false
+                   }
+               }
+              callback.startActionMode(view,R.menu.menu_action_home)
+          }
+
+
+
+
+
+         documentAdapter.canEdit=true
+         documentAdapter.selectedIds.apply {
+             clear()
+             add(document.id)
+         }
+
     }
 
     override fun onClick(document: Document, view: View) {
@@ -148,12 +168,12 @@ class HomeFragment : Fragment(), DocumentAdapter.FolderAdapterCallback {
         findNavController().navigate(action)
     }
 
-    private fun confirmDelete(document: Document){
+    private fun confirmDelete(ids:Set<Long>){
         val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage("Are you sure you want to delete ${document.name}?")
+        builder.setMessage("Are you sure you want to delete ${ids.size} document(s) ?")
         builder.setCancelable(false)
         builder.setPositiveButton("Yes"){ dialog, which ->
-           viewModel.deleteDocument(document)
+           viewModel.deleteDocuments(ids.toLongArray())
         }
         builder.setNegativeButton("No",{_,a->})
         builder.show()

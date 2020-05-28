@@ -1,22 +1,25 @@
 package com.moor.scannit.ui.home
 
 import android.view.*
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.moor.scannit.data.Document
 import com.moor.scannit.databinding.ItemDocumentBinding
 import com.moor.scannit.inflater
 import com.moor.scannit.toDateString
+import com.moor.scannit.ui.AdapterCallback
 import com.moor.scannit.ui.BoundViewHolder
-import com.moor.scannit.ui.EditableAdapter
 
 class DocumentAdapter(val documents:List<Document>):RecyclerView.Adapter<BoundViewHolder<ItemDocumentBinding>>() {
 
-    interface  FolderAdapterCallback{
-        fun  onLongClick(document: Document,view:View)
-        fun onClick(document: Document,view:View)
-    }
+    var selectedIds= mutableSetOf<Long>()
+    var canEdit:Boolean = false
+        set(value) {
+            field=value
+            notifyDataSetChanged()
+        }
 
-    var listener:FolderAdapterCallback?=null
+    var listener: AdapterCallback<Document>?=null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):BoundViewHolder<ItemDocumentBinding> {
         return BoundViewHolder(ItemDocumentBinding.inflate(parent.inflater(),parent,false))
@@ -32,14 +35,26 @@ class DocumentAdapter(val documents:List<Document>):RecyclerView.Adapter<BoundVi
            nameTextView.text=document.name
            countTextView.text= "${document.pages.count()}"
            createDateTextView.text=document.createDate?.toDateString()
+           selectedCheckbox.isVisible= canEdit
 
+           if (canEdit){
+               selectedCheckbox.isChecked =selectedIds.contains(document.id)
+               selectedCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                   if (isChecked)selectedIds.add(document.id) else selectedIds.remove(document.id)
+               }
+               root.setOnClickListener{
+                   selectedCheckbox.toggle()
+               }
+           }else{
+               root.setOnClickListener {view->
+                   listener?.onClick(document,view)
+               }
+           }
            root.setOnLongClickListener {view->
                listener?.onLongClick(document,view)
                true
            }
-           root.setOnClickListener {view->
-               listener?.onClick(document,view)
-           }
+
 
        }
 
