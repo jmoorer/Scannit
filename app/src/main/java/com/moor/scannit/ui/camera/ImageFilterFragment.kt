@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentImageFilterBinding
 import com.uvstudio.him.photofilterlibrary.PhotoFilter
-import jp.co.cyberagent.android.gpuimage.filter.*
+import ja.burhanrashid52.photoeditor.PhotoEditor
 
 
 class ImageFilterFragment : Fragment() {
@@ -45,10 +45,14 @@ class ImageFilterFragment : Fragment() {
         viewModel.getImage().observe(viewLifecycleOwner, Observer { bitmap->
           this.bitmap=bitmap
            // photoFilter.applyEffect(bitmap!!.copy(bitmap?.config,true),AutoFix())
-
+            binding.photoEditorView.source.setImageBitmap(bitmap)
         })
 
         var photoFilter = PhotoFilter()
+
+        val mPhotoEditor = PhotoEditor.Builder(requireContext(), binding.photoEditorView)
+            .setPinchTextScalable(true)
+            .build()
         binding.filterListView.apply {
 //            adapter= FilterAdapter().apply {
 //                listener= object :FilterAdapter.FilterAdapterCallback{
@@ -57,32 +61,38 @@ class ImageFilterFragment : Fragment() {
 //                    }
 //                }
 //            }
+            var filters=ja.burhanrashid52.photoeditor.PhotoFilter.values()
             adapter= FilterAdapter2().apply {
                 listener={p->
-                   val bmp= when(p){
-                        0->bitmap
-                        1-> photoFilter.one(requireContext(),bitmap)
-                        2-> photoFilter.two(requireContext(),bitmap)
-                        3-> photoFilter.three(requireContext(),bitmap)
-                        4-> photoFilter.four(requireContext(),bitmap)
-                        5-> photoFilter.five(requireContext(),bitmap)
-                       6-> photoFilter.six(requireContext(),bitmap)
-                       7-> photoFilter.seven(requireContext(),bitmap)
-                       8-> photoFilter.eight(requireContext(),bitmap)
-                       9-> photoFilter.nine(requireContext(),bitmap)
-                       10-> photoFilter.ten(requireContext(),bitmap)
-                       11-> photoFilter.eleven(requireContext(),bitmap)
-                       12-> photoFilter.twelve(requireContext(),bitmap)
-                       13-> photoFilter.thirteen(requireContext(),bitmap)
-                       14-> photoFilter.fourteen(requireContext(),bitmap)
-                       15-> photoFilter.fifteen(requireContext(),bitmap)
-                       16 ->photoFilter.sixteen(requireContext(),bitmap)
-                        else-> bitmap
-                    }
-                   binding.imageView.setImageBitmap(bmp)
+                    mPhotoEditor.setFilterEffect(filters[p])
+//                  when(p){
+//                        0->mPhotoEditor.setFilterEffect(ja.burhanrashid52.photoeditor.PhotoFilter.BLACK_WHITE)
+//                        1-> mPhotoEditor.setFilterEffect(ja.burhanrashid52.photoeditor.PhotoFilter.BRIGHTNESS)
+//                        2-> mPhotoEditor.setFilterEffect(ja.burhanrashid52.photoeditor.PhotoFilter.CROSS_PROCESS)
+//                        3->mPhotoEditor.setFilterEffect(ja.burhanrashid52.photoeditor.PhotoFilter.DUE_TONE)
+//                        4-> mPhotoEditor.setFilterEffect(ja.burhanrashid52.photoeditor.PhotoFilter.NEGATIVE)
+//                        5-> mPhotoEditor.setFilterEffect(ja.burhanrashid52.photoeditor.PhotoFilter.LOMISH)
+//                       6->mPhotoEditor.setFilterEffect(ja.burhanrashid52.photoeditor.PhotoFilter.FILL_LIGHT)
+//                       7-> mPhotoEditor.setFilterEffect(ja.burhanrashid52.photoeditor.PhotoFilter.GRAY_SCALE)
+//                       8-> photoFilter.eight(requireContext(),bitmap)
+//                       9-> photoFilter.nine(requireContext(),bitmap)
+//                       10-> photoFilter.ten(requireContext(),bitmap)
+//                       11-> photoFilter.eleven(requireContext(),bitmap)
+//                       12-> photoFilter.twelve(requireContext(),bitmap)
+//                       13-> photoFilter.thirteen(requireContext(),bitmap)
+//                       14-> photoFilter.fourteen(requireContext(),bitmap)
+//                       15-> photoFilter.fifteen(requireContext(),bitmap)
+//                       16 ->photoFilter.sixteen(requireContext(),bitmap)
+//                        else-> bitmap
+//                    }
+                  // binding.imageView.setImageBitmap(bmp)
                 }
             }
             layoutManager= LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+
+
+
+
         }
 
 

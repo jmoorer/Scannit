@@ -32,6 +32,11 @@
         <argument
             android:name="documentId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_cameraFragment_to_documentFragment"
+            app:destination="@id/documentFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/imageProccessFragment"

@@ -4,32 +4,30 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.Rect
-import android.graphics.RectF
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.util.Size
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.View
+import android.view.ViewGroup
 import androidx.camera.core.*
-import androidx.camera.extensions.BokehImageCaptureExtender
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+
 import com.google.common.util.concurrent.ListenableFuture
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentCameraBinding
 import com.moor.scannit.supportActionBar
 import com.moor.scannit.toBitmap
-import com.moor.scannit.ui.views.ObjectAnalyzer
 import java.io.File
 import java.io.FileOutputStream
 
@@ -49,16 +47,20 @@ class CameraFragment() : Fragment() {
 
     private lateinit var cameraControl: CameraControl
     private lateinit var cameraInfo: CameraInfo
-    private var ocrMode=false
+
 
     private val viewModel:CameraViewModel by activityViewModels()
     private val args:CameraFragmentArgs by navArgs()
     var menu: Menu?=null
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         viewModel.setDocument(args.documentId)
         setHasOptionsMenu(true)
+
     }
 
 
@@ -69,14 +71,33 @@ class CameraFragment() : Fragment() {
     ): View? {
 
         supportActionBar?.title=null
+
         binding = FragmentCameraBinding.inflate(inflater, container, false).apply {
             this@CameraFragment.previewView = previewView
             cameraCaptureButton.setOnClickListener {
                 takePicture()
             }
-            //bar.replaceMenu(R.menu.menu_camera)
+
             flashCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 imageCapture.flashMode= if (isChecked) ImageCapture.FLASH_MODE_ON else ImageCapture.FLASH_MODE_OFF
+            }
+
+            modesRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+                when(checkedId){
+                    R.id.single_radio-> CameraViewModel.CameraMode.Single
+                    R.id.ocr_radio-> CameraViewModel.CameraMode.Ocr
+                    R.id.batch_radio-> CameraViewModel.CameraMode.Batch
+                    else-> CameraViewModel.CameraMode.None
+                }.let {
+                    viewModel.setMode(it)
+                }
+            }
+            modesRadioGroup.check(R.id.single_radio)
+
+            batchSaveButton.setOnClickListener {
+                val id = viewModel.saveBatch()
+                val action= CameraFragmentDirections.actionCameraFragmentToDocumentFragment(id)
+                findNavController().navigate(action)
             }
         }
         if (allPermissionsGranted()) {
@@ -90,6 +111,35 @@ class CameraFragment() : Fragment() {
 
 
         return binding.root
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel.getState().observe(viewLifecycleOwner, Observer { state->
+            when(state.cameraMode){
+                CameraViewModel.CameraMode.Batch->{
+                    binding.apply {
+                        batchFrame.visibility=View.VISIBLE
+                        if(state.batchBitmaps.any()){
+                            batchSaveButton.visibility=View.VISIBLE
+                            pageCountTextView.visibility=View.VISIBLE
+                            previewImageView.setImageBitmap(state.batchBitmaps.last())
+                            pageCountTextView.text= "${state.batchBitmaps.size}"
+                        }else{
+                            previewImageView.setImageDrawable(null)
+                            pageCountTextView.visibility=View.INVISIBLE
+                            batchSaveButton.visibility=View.INVISIBLE
+                        }
+
+                    }
+                }
+                else ->  binding.apply {
+                    batchSaveButton.visibility=View.GONE
+                    batchFrame.visibility=View.GONE
+                }
+            }
+        })
     }
 
     @SuppressLint("RestrictedApi")
@@ -111,8 +161,27 @@ class CameraFragment() : Fragment() {
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
                     val rotation = imageProxy.imageInfo.rotationDegrees
                     val bitmap = imageProxy.image?.toBitmap(rotation)
-                    bitmap?.let { viewModel.setImage(it) }
-                    findNavController().navigate(R.id.imageProccessFragment)
+                    bitmap?.let {
+                        when(viewModel.mode){
+                            CameraViewModel.CameraMode.Ocr->{
+                                val temp= File.createTempFile("images",".jpg",requireContext().cacheDir)
+                                val output = FileOutputStream(temp)
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                                output.flush()
+                                output.close()
+                                findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to Uri.fromFile(temp).toString() ))
+                            }
+                            CameraViewModel.CameraMode.Single->{
+                                viewModel.setImage(bitmap)
+                                findNavController().navigate(R.id.imageProccessFragment)
+                            }
+                            CameraViewModel.CameraMode.Batch->{
+                                viewModel.addBatchImage(bitmap)
+
+                            }
+                        }
+                    }
+
                     super.onCaptureSuccess(imageProxy)
                 }
             })
@@ -137,10 +206,9 @@ class CameraFragment() : Fragment() {
     @SuppressLint("RestrictedApi")
     private fun startCamera() {
         CameraX.unbindAll()
-        var bokehImageCapture:BokehImageCaptureExtender
+
         imageCapture = ImageCapture.Builder().apply {
             setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-             bokehImageCapture = BokehImageCaptureExtender.create(this)
         }.build()
 
         imagePreview = Preview.Builder().apply {
@@ -153,11 +221,6 @@ class CameraFragment() : Fragment() {
         }.build()
 
         val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
-        if (bokehImageCapture.isExtensionAvailable(cameraSelector)) {
-            // Enable the extension if available.
-            bokehImageCapture.enableExtension(cameraSelector)
-        }
-
 
         cameraProviderFuture.addListener(Runnable {
             val cameraProvider = cameraProviderFuture.get()

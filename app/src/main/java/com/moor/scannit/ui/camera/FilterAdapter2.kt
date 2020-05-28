@@ -19,7 +19,7 @@ class FilterAdapter2:RecyclerView.Adapter<BoundViewHolder<ItemFilterBinding>>() 
     }
 
     override fun getItemCount(): Int {
-      return  16
+      return  24
     }
 
     override fun onBindViewHolder(holder: BoundViewHolder<ItemFilterBinding>, position: Int) {

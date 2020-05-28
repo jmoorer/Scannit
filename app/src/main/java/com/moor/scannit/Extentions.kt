@@ -1,6 +1,7 @@
 package com.moor.scannit
 
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.res.Resources
 import android.database.Cursor
@@ -118,22 +119,21 @@ fun Context.loadBitmap(uri: Uri): Bitmap {
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }
 
-fun Context.generatePdf(documet: Document): File {
-    //val doc = Document()
+fun Fragment.createProgressDialog(message:String): ProgressDialog {
+    var progressDialog = ProgressDialog(activity);
+    progressDialog.setTitle("My Content");
+    progressDialog.setMessage("Loading this Content, please wait!");
+    return progressDialog
+}
+
+fun Context.generatePdf(documet: Document, name:String = documet.name): File {
+
     try {
-        //create instance of PdfWriter class
-        val file = File(exportFolder,documet.name+".pdf")
-       // PdfWriter.getInstance(doc, FileOutputStream(file))
 
-        //open the document for writing
-        //doc.open()
-        //doc.addTitle(documet.name)
-
+        val file = File(exportFolder,"$name.pdf")
         var doc= PdfDocument()
         documet.pages.forEach { page->
             var bitmap=loadBitmap(Uri.parse(page.uri))
-//            val stream= ByteArrayOutputStream()
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
             var pi= PdfDocument.PageInfo.Builder(bitmap.width,bitmap.height,page.number).create()
             var pg= doc.startPage(pi)
             var canvas= pg.canvas
@@ -148,19 +148,12 @@ fun Context.generatePdf(documet: Document): File {
             canvas.drawBitmap(bitmap,0f,0f,null)
 
             doc.finishPage(pg)
-
         }
-
         doc.writeTo(FileOutputStream(file))
-        var x= file.exists()
         doc.close()
-
         return file
-
-
     }
     catch (e: Exception){
-        //if anything goes wrong causing exception, get and show exception message
         throw e
     }
 

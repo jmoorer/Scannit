@@ -5,10 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
-import android.provider.MediaStore
-import com.itextpdf.text.Document
-import com.itextpdf.text.Image
-import com.itextpdf.text.pdf.PdfWriter
+
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream

@@ -2,6 +2,7 @@ package com.moor.scannit.ui
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.Window
 import android.view.WindowManager
 
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window?.requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         navController = findNavController(R.id.nav_host)
@@ -35,8 +37,6 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController,appBarConfiguration)
 
         FirebaseApp.initializeApp(this)
-
-            window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
 
 
     }

@@ -7,18 +7,25 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="actionMenuTextColor">@color/icons</item>
-<!--        <item name="android:windowTranslucentStatus">true</item>-->
-        <item name="android:windowTranslucentNavigation">true</item>
-<!--        <item name="android:actionBarStyle">@style/MyActionBarStyle</item>-->
-<!--        <item name="android:textColor">?android:attr/textColorPrimary</item>-->
-<!--        <item name="android:actionBarStyle">@style/MyTheme.ActionBar</item>-->
-<!--        <item name="android:actionBarWidgetTheme">@style/MyTheme.ActionBarWidget</item>-->
     </style>
-    <style name="MyTheme.ActionBarWidget"
-        parent="android:Theme.Holo.Light">
-        <item name="android:popupMenuStyle">@android:style/Widget.Holo.Light.PopupMenu</item>
-        <item name="android:dropDownListViewStyle">@android:style/Widget.Holo.Light.ListView.DropDown</item>
+    <style name="AppTheme.ActionBar.Transparent" parent="AppTheme">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="colorPrimary">@android:color/transparent</item>
     </style>
+<!--    <style name="FullscreenTheme" parent="BaseTheme">-->
+<!--        <item name="android:textColorSecondary">@android:color/white</item>-->
+<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
+<!--        <item name="android:navigationBarColor">@android:color/transparent</item>-->
+<!--        <item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
+<!--    </style>-->
+    <style name="CameraOption" >
 
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
 
 </resources>

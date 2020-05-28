@@ -13,13 +13,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
-import com.moor.scannit.BuildConfig
-import com.moor.scannit.R
+import com.moor.scannit.*
 import com.moor.scannit.data.Document
 import com.moor.scannit.data.Page
+import com.moor.scannit.databinding.DialogSaveBinding
 import com.moor.scannit.databinding.FragmentDocumentBinding
-import com.moor.scannit.generatePdf
-import com.moor.scannit.supportActionBar
+import com.moor.scannit.ui.ProgressDialog
 import com.moor.scannit.ui.RowHeightDecoration
 import com.moor.scannit.ui.SpacesItemDecoration
 
@@ -56,6 +55,7 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
                pages.addAll(doc.pages)
                pageAdapter.notifyDataSetChanged()
             }
+
         })
     }
 
@@ -121,26 +121,19 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
 
     private fun exportDocument(){
         val builder = AlertDialog.Builder(requireContext())
+        val view=layoutInflater.inflate(R.layout.dialog_save,null)
+        var binding=DialogSaveBinding.bind(view).apply {
+            fileNameTextView.setText(document.name)
+        }
         builder.setTitle("Export as")
-            .setItems(arrayOf("Pdf File","Text File","Image")){ dialog, which->
-                when(which){
-                    1->{
-                        val file = requireContext().generatePdf(document)
-                        val intent = Intent(Intent.ACTION_VIEW)
-
-
-                        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-
-                        val uri: Uri? = FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID+".fileprovider", file)
-                        intent.setDataAndType(uri, "application/pdf")
-
-//                        val pm = requireActivity().packageManager
-//                        if (intent.resolveActivity(pm) != null) {
-                            startActivity(intent)
-                        //}
-                    }
-                }
-                dialog.dismiss()
+            .setView(view)
+            .setPositiveButton("Save"){d,w->
+                val file = requireContext().generatePdf(document,binding.fileNameTextView.text.toString())
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                val uri: Uri? = FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID, file)
+                intent.setDataAndType(uri, "application/pdf")
+                startActivity(intent)
             }
         builder.create().show()
     }

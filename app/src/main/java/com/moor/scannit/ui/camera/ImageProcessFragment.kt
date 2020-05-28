@@ -37,19 +37,22 @@ class ImageProcessFragment : Fragment(){
             binding.apply {
                 imageView.setImageBitmap(bitmap)
                 doneButton.setOnClickListener {
-                    val documentId=viewModel.saveCroppedImage(bitmap)
-                    val action= ImageProcessFragmentDirections.actionImageProccessFragmentToDocumentFragment(documentId)
-                    findNavController().navigate(action)
+                     bitmap?.let{
+                        val documentId=   viewModel.saveCroppedImage(bitmap)
+                        val action= ImageProcessFragmentDirections.actionImageProccessFragmentToDocumentFragment(documentId)
+                        findNavController().navigate(action)
+                     }
                 }
 
                 ocrButton.setOnClickListener {
 
-                    val temp=File.createTempFile("images",".jpg",requireContext().cacheDir)
-                    val output = FileOutputStream(temp)
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
-                    output.flush()
-                    output.close()
-                    findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to Uri.fromFile(temp).toString() ))
+                    findNavController().navigate(R.id.imageFilterFragment)
+//                    val temp=File.createTempFile("images",".jpg",requireContext().cacheDir)
+//                    val output = FileOutputStream(temp)
+//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+//                    output.flush()
+//                    output.close()
+//                    findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to Uri.fromFile(temp).toString() ))
                 }
 
             }

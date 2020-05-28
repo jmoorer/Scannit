@@ -77,11 +77,13 @@ dependencies {
 
     implementation "androidx.viewpager2:viewpager2:1.0.0"
 
+
     implementation 'com.github.mukeshsolanki:photofilter:2.0.0'
     implementation 'com.github.hgayan7:FilterLibrary:0.1.0'
 
     implementation 'jp.co.cyberagent.android:gpuimage:2.0.4'
 
-    implementation 'com.itextpdf:itextg:5.5.10'
+    implementation 'ja.burhanrashid52:photoeditor:1.0.0'
+
 
 }

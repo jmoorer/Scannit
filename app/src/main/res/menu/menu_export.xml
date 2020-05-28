@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <item android:id="@+id/as_text" android:title="Textfile"></item>
+    <item android:id="@+id/as_pdf" android:title="Pdf"></item>
 </menu>
