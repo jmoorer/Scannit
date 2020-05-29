@@ -14,7 +14,7 @@ import java.util.*
 
 
 const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-
+const val RESULT_LOAD_IMAGE: Int=101
 
 fun generateFileName(): String {
    return SimpleDateFormat(

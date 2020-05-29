@@ -2,6 +2,7 @@ package com.moor.scannit.ui.home
 
 
 import android.Manifest
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Intent
@@ -21,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.moor.scannit.R
+import com.moor.scannit.RESULT_LOAD_IMAGE
 import com.moor.scannit.data.Document
 import com.moor.scannit.databinding.FragmentHomeBinding
 import com.moor.scannit.getRealPathFromUri
@@ -30,8 +32,6 @@ import com.moor.scannit.ui.camera.CameraViewModel
 
 class HomeFragment : Fragment(), AdapterCallback<Document> {
 
-
-    private val RESULT_LOAD_IMAGE: Int=101
     private lateinit var binding: FragmentHomeBinding
     private  val viewModel:HomeViewModel by viewModels()
     private val cameraViewModel: CameraViewModel by activityViewModels()
@@ -68,7 +68,6 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
             bar.setOnMenuItemClickListener { item ->
                 when(item.itemId){
                     R.id.action_open->{
-                        cameraViewModel.setDocument(0)
                         if(allPermissionsGranted()){
                             pickImage()
                         }else{
@@ -168,16 +167,7 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
         findNavController().navigate(action)
     }
 
-    private fun confirmDelete(ids:Set<Long>){
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage("Are you sure you want to delete ${ids.size} document(s) ?")
-        builder.setCancelable(false)
-        builder.setPositiveButton("Yes"){ dialog, which ->
-           viewModel.deleteDocuments(ids.toLongArray())
-        }
-        builder.setNegativeButton("No",{_,a->})
-        builder.show()
-    }
+
     private fun renameFolder(document: Document){
         val editText= EditText(context);
         editText.setText(document.name)
@@ -197,20 +187,21 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            val selectedImage: Uri = data.data!!
-            val path= getRealPathFromUri(selectedImage)
-
-            cameraViewModel.setImage(BitmapFactory.decodeFile(path))
-            findNavController().navigate(R.id.imageProccessFragment)
-        }
-    }
 
     private  fun pickImage(){
         val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(i, RESULT_LOAD_IMAGE)
+        activity?.startActivityForResult(i, RESULT_LOAD_IMAGE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
+            val selectedImage: Uri = data.data!!
+            val path= requireContext().getRealPathFromUri(selectedImage)
+            cameraViewModel.setDocument(0)
+            cameraViewModel.setImage(BitmapFactory.decodeFile(path))
+            findNavController().navigate(R.id.imageProccessFragment)
+        }
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {

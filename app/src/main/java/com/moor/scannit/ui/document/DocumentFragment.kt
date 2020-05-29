@@ -1,9 +1,12 @@
 package com.moor.scannit.ui.document
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.*
 import android.widget.EditText
 import androidx.core.content.FileProvider
@@ -21,6 +24,7 @@ import com.moor.scannit.databinding.FragmentDocumentBinding
 import com.moor.scannit.ui.ProgressDialog
 import com.moor.scannit.ui.RowHeightDecoration
 import com.moor.scannit.ui.SpacesItemDecoration
+import com.moor.scannit.ui.camera.CameraViewModel
 
 
 class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
@@ -30,6 +34,7 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     private  val args:DocumentFragmentArgs by navArgs()
 
     val viewModel:DocumentViewModel by activityViewModels()
+    private val cameraViewModel: CameraViewModel by activityViewModels()
 
     val pages= arrayListOf<Page>()
     val pageAdapter=PageAdapter(pages).apply {
@@ -72,10 +77,14 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
                 addItemDecoration(SpacesItemDecoration(16))
                 addItemDecoration(RowHeightDecoration(200))
             }
-            addPageButtonButton.setOnClickListener {
+            actionPick.setOnClickListener {
+                pickImage()
+            }
+            actionCapture.setOnClickListener {
                 val action = DocumentFragmentDirections.actionDocumentFragmentToCameraFragment(args.documentId)
                 findNavController().navigate(action)
             }
+           // addImageDial.inflate(R.menu.menu_action_home)
         }
 
         return  binding.root
@@ -143,8 +152,24 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     }
 
     override fun onClick(page: Page, view: View) {
-
        val action= DocumentFragmentDirections.actionDocumentFragmentToPageFragment()
         findNavController().navigate(action)
     }
+
+
+    private  fun pickImage(){
+        val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(i, RESULT_LOAD_IMAGE)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
+            val selectedImage: Uri = data.data!!
+            val path= requireContext().getRealPathFromUri(selectedImage)
+            cameraViewModel.setDocument(document.id)
+            cameraViewModel.setImage(BitmapFactory.decodeFile(path))
+            findNavController().navigate(R.id.imageProccessFragment)
+        }
+    }
+
 }

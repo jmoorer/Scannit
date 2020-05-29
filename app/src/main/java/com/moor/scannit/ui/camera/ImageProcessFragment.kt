@@ -14,11 +14,6 @@ import androidx.navigation.fragment.findNavController
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentImageProcessBinding
 
-import com.uvstudio.him.photofilterlibrary.PhotoFilter
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URI
-
 
 class ImageProcessFragment : Fragment(){
 
@@ -38,7 +33,7 @@ class ImageProcessFragment : Fragment(){
                 imageView.setImageBitmap(bitmap)
                 doneButton.setOnClickListener {
                      bitmap?.let{
-                        val documentId=   viewModel.saveCroppedImage(bitmap)
+                        val documentId  =  viewModel.saveCroppedImage(bitmap)
                         val action= ImageProcessFragmentDirections.actionImageProccessFragmentToDocumentFragment(documentId)
                         findNavController().navigate(action)
                      }
@@ -65,13 +60,9 @@ class ImageProcessFragment : Fragment(){
     ): View? {
 
         binding = FragmentImageProcessBinding.inflate(inflater,container,false).apply {
-
             cropButton.setOnClickListener {
                 findNavController().navigate(R.id.cropFragment)
             }
-
-
-
         }
 
 

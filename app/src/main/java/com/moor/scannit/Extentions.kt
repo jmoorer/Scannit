@@ -41,11 +41,11 @@ fun Image.toBitmap(rotationDegrees: Int): Bitmap {
     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }
 
-fun Fragment.getRealPathFromUri(contentUri: Uri): String? {
+fun Context.getRealPathFromUri(contentUri: Uri): String? {
     var cursor: Cursor? = null
     return try {
         val proj = arrayOf(MediaStore.Images.Media.DATA)
-        cursor = context?.contentResolver?.query(contentUri, proj, null, null, null)
+        cursor = contentResolver?.query(contentUri, proj, null, null, null)
         assert(cursor != null)
         val column_index = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
         cursor?.moveToFirst()
