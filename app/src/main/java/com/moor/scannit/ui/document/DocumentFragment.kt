@@ -168,7 +168,7 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
             val path= requireContext().getRealPathFromUri(selectedImage)
             cameraViewModel.setDocument(document.id)
             cameraViewModel.setImage(BitmapFactory.decodeFile(path))
-            findNavController().navigate(R.id.imageProccessFragment)
+            findNavController().navigate(R.id.cropFragment)
         }
     }
 

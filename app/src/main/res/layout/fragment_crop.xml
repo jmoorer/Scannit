@@ -7,28 +7,11 @@
     android:orientation="vertical"
     tools:context=".ui.camera.ImageProcessFragment">
 
-    <com.isseiaoki.simplecropview.CropImageView
+    <com.theartofdev.edmodo.cropper.CropImageView
         android:id="@+id/cropImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10"
-        android:paddingLeft="16dp"
-        android:paddingTop="16dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="16dp"
-        custom:scv_background_color="@color/white"
-        custom:scv_crop_mode="fit_image"
-        custom:scv_frame_color="@color/colorAccent"
-        custom:scv_frame_stroke_weight="1dp"
-        custom:scv_guide_color="@color/colorAccent"
-        custom:scv_guide_show_mode="show_always"
-        custom:scv_guide_stroke_weight="1dp"
-        custom:scv_handle_color="@color/colorAccent"
-        custom:scv_handle_show_mode="show_always"
-        custom:scv_handle_size="14dp"
-        custom:scv_min_frame_size="50dp"
-
-        custom:scv_touch_padding="8dp" />
+        android:layout_weight="10"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -57,9 +40,23 @@
             android:scaleType="fitCenter"
             android:src="@drawable/ic_rotate_right"
             custom:layout_constraintBottom_toBottomOf="parent"
-            custom:layout_constraintEnd_toStartOf="@+id/done_button"
+            custom:layout_constraintEnd_toStartOf="@+id/reset_button"
             custom:layout_constraintHorizontal_bias="0.5"
             custom:layout_constraintStart_toEndOf="@+id/rotate_left_button"
+            custom:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/reset_button"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_refresh"
+            android:tint="@color/icons"
+            custom:layout_constraintBottom_toBottomOf="parent"
+            custom:layout_constraintEnd_toStartOf="@+id/done_button"
+            custom:layout_constraintHorizontal_bias="0.5"
+            custom:layout_constraintStart_toEndOf="@+id/rotate_right_button"
             custom:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
@@ -72,7 +69,7 @@
             custom:layout_constraintBottom_toBottomOf="parent"
             custom:layout_constraintEnd_toEndOf="parent"
             custom:layout_constraintHorizontal_bias="0.5"
-            custom:layout_constraintStart_toEndOf="@+id/rotate_right_button"
+            custom:layout_constraintStart_toEndOf="@+id/reset_button"
             custom:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

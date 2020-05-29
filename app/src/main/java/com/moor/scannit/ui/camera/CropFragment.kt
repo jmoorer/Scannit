@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.toRect
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -37,17 +38,22 @@ class CropFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel.getImage().observe(viewLifecycleOwner, Observer { bitmap->
             binding.apply {
-                cropImageView.imageBitmap=bitmap
+                cropImageView.setImageBitmap(bitmap)
+
                 doneButton.setOnClickListener {
-                    viewModel.setImage(cropImageView.croppedBitmap)
-                    findNavController().popBackStack()
+                    viewModel.setImage(cropImageView.croppedImage)
+                    findNavController().navigate(R.id.imageFilterFragment)
                 }
                 rotateLeftButton.setOnClickListener {
-                    cropImageView.rotateImage(CropImageView.RotateDegrees.ROTATE_M90D)
+                    cropImageView.rotateImage(-90)
                 }
 
                 rotateRightButton.setOnClickListener {
-                    cropImageView.rotateImage(CropImageView.RotateDegrees.ROTATE_90D)
+                    cropImageView.rotateImage(90)
+                }
+
+                resetButton.setOnClickListener {
+                    cropImageView.resetCropRect()
                 }
 
             }

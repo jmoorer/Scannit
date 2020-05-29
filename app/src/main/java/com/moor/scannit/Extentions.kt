@@ -10,10 +10,8 @@ import android.graphics.pdf.PdfDocument
 import android.media.ExifInterface
 import android.media.Image
 import android.net.Uri
-import android.os.Environment
 import android.provider.MediaStore
 import android.text.format.DateFormat
-import android.text.format.DateFormat.format
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -22,10 +20,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.moor.scannit.data.Document
-
 import java.io.File
 import java.io.FileOutputStream
-
 import java.util.*
 
 
@@ -157,4 +153,12 @@ fun Context.generatePdf(documet: Document, name:String = documet.name): File {
         throw e
     }
 
+}
+fun RectF.toRect(): Rect? {
+    val rect = Rect()
+    rect.left = Math.round(left);
+    rect.top = Math.round(top);
+    rect.right = Math.round(right);
+    rect.bottom = Math.round(bottom);
+    return rect
 }

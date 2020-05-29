@@ -190,7 +190,7 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
 
     private  fun pickImage(){
         val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        activity?.startActivityForResult(i, RESULT_LOAD_IMAGE)
+        startActivityForResult(i, RESULT_LOAD_IMAGE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -200,7 +200,7 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
             val path= requireContext().getRealPathFromUri(selectedImage)
             cameraViewModel.setDocument(0)
             cameraViewModel.setImage(BitmapFactory.decodeFile(path))
-            findNavController().navigate(R.id.imageProccessFragment)
+            findNavController().navigate(R.id.cropFragment)
         }
     }
 

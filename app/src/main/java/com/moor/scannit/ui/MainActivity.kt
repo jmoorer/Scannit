@@ -35,9 +35,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private val cameraViewModel: CameraViewModel by viewModels()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        window?.requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState)
+        System.loadLibrary("NativeImageProcessor");
         setContentView(R.layout.activity_main)
         navController = findNavController(R.id.nav_host)
       //  val drawerLayout= findViewById<DrawerLayout>(R.id.drawer)

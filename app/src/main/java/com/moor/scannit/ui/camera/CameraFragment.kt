@@ -173,7 +173,7 @@ class CameraFragment() : Fragment() {
                             }
                             CameraViewModel.CameraMode.Single->{
                                 viewModel.setImage(bitmap)
-                                findNavController().navigate(R.id.imageProccessFragment)
+                                findNavController().navigate(R.id.cropFragment)
                             }
                             CameraViewModel.CameraMode.Batch->{
                                 viewModel.addBatchImage(bitmap)
