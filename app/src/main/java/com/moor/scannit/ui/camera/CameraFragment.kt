@@ -8,10 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -205,8 +202,6 @@ class CameraFragment() : Fragment() {
 
     @SuppressLint("RestrictedApi")
     private fun startCamera() {
-        CameraX.unbindAll()
-
         imageCapture = ImageCapture.Builder().apply {
             setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
         }.build()
@@ -229,9 +224,28 @@ class CameraFragment() : Fragment() {
             cameraInfo = camera.cameraInfo
             previewView.preferredImplementationMode = PreviewView.ImplementationMode.TEXTURE_VIEW
             imagePreview.setSurfaceProvider(previewView.createSurfaceProvider(camera.cameraInfo))
+            val listener = object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    val currentZoomRatio: Float = cameraInfo.zoomState.value?.zoomRatio ?: 0F
+                    val delta = detector.scaleFactor
+                    cameraControl.setZoomRatio(currentZoomRatio * delta)
+                    return true
+                }
+            }
+
+            val scaleGestureDetector = ScaleGestureDetector(context, listener)
+            previewView.setOnTouchListener { v, event ->
+                scaleGestureDetector.onTouchEvent(event)
+                return@setOnTouchListener true
+            }
         }, ContextCompat.getMainExecutor(requireContext()))
 
     }
 
+    @SuppressLint("RestrictedApi")
+    override fun onDestroyView() {
+        super.onDestroyView()
+        CameraX.unbindAll()
+    }
 
 }
