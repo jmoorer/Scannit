@@ -166,7 +166,8 @@ class CameraFragment() : Fragment() {
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
                                 output.flush()
                                 output.close()
-                                findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to Uri.fromFile(temp).toString() ))
+                                val action= CameraFragmentDirections.actionCameraFragmentToOcrFragment(Uri.fromFile(temp))
+                                findNavController().navigate(action)
                             }
                             CameraViewModel.CameraMode.Single->{
                                 viewModel.setImage(bitmap)
@@ -234,6 +235,7 @@ class CameraFragment() : Fragment() {
             }
 
             val scaleGestureDetector = ScaleGestureDetector(context, listener)
+
             previewView.setOnTouchListener { v, event ->
                 scaleGestureDetector.onTouchEvent(event)
                 return@setOnTouchListener true

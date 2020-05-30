@@ -25,7 +25,8 @@
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.moor.scannit.ui.camera.CameraFragment"
-        tools:layout="@layout/fragment_camera" >
+        android:label="@string/no_name"
+        tools:layout="@layout/fragment_camera">
         <argument
             android:name="documentId"
             app:argType="long" />
@@ -37,6 +38,9 @@
         <action
             android:id="@+id/action_cameraFragment_to_cropFragment"
             app:destination="@id/cropFragment" />
+        <action
+            android:id="@+id/action_cameraFragment_to_ocrFragment"
+            app:destination="@id/ocrFragment" />
     </fragment>
     <fragment
         android:id="@+id/documentFragment"
@@ -55,23 +59,18 @@
     <fragment
         android:id="@+id/pageFragment"
         android:name="com.moor.scannit.ui.document.PageFragment"
-        android:label="PageFragment" >
+        android:label="@string/no_name">
         <action
             android:id="@+id/action_pageFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
         <action
-            android:id="@+id/action_pageFragment_to_extractedTextFragment"
-            app:destination="@id/extractedTextFragment" />
+            android:id="@+id/action_pageFragment_to_ocrFragment"
+            app:destination="@id/ocrFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/extractedTextFragment"
-        android:name="com.moor.scannit.ui.preview.ExtractedTextFragment"
-        android:label="Extracted Text"
-        tools:layout="@layout/fragment_extracted_text_list" />
     <fragment
         android:id="@+id/cropFragment"
         android:name="com.moor.scannit.ui.camera.CropFragment"
-        android:label="CropFragment" >
+        android:label="@string/no_name">
         <action
             android:id="@+id/action_cropFragment_to_imageFilterFragment"
             app:destination="@id/imageFilterFragment" />
@@ -79,12 +78,21 @@
     <fragment
         android:id="@+id/imageFilterFragment"
         android:name="com.moor.scannit.ui.camera.FilterFragment"
-        android:label="fragment_image_filter"
-        tools:layout="@layout/fragment_image_filter" >
+        android:label="@string/no_name"
+        tools:layout="@layout/fragment_image_filter">
         <action
             android:id="@+id/action_imageFilterFragment_to_documentFragment"
             app:destination="@id/documentFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/ocrFragment"
+        android:name="com.moor.scannit.ui.ocr.OcrFragment"
+        android:label="@string/no_name"
+        tools:layout="@layout/fragment_ocr">
+        <argument
+            android:name="uri"
+            app:argType="android.net.Uri" />
     </fragment>
 </navigation>

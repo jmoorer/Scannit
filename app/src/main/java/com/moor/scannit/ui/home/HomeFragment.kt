@@ -65,20 +65,30 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
                 val action = HomeFragmentDirections.actionHomeFragmentToCameraFragment(0)
                 findNavController().navigate(action)
             }
-            bar.setOnMenuItemClickListener { item ->
-                when(item.itemId){
-                    R.id.action_open->{
-                        if(allPermissionsGranted()){
-                            pickImage()
-                        }else{
-                            requestPermissions(
-                                REQUIRED_PERMISSIONS,
-                                REQUEST_CODE_PERMISSIONS
-                            )
-                        }
-                    }
+//            bar.setOnMenuItemClickListener { item ->
+//                when(item.itemId){
+//                    R.id.action_open->{
+//                        if(allPermissionsGranted()){
+//                            pickImage()
+//                        }else{
+//                            requestPermissions(
+//                                REQUIRED_PERMISSIONS,
+//                                REQUEST_CODE_PERMISSIONS
+//                            )
+//                        }
+//                    }
+//                }
+//                true
+//            }
+            pickButton.setOnClickListener {
+                if(allPermissionsGranted()){
+                    pickImage()
+                }else{
+                    requestPermissions(
+                        REQUIRED_PERMISSIONS,
+                        REQUEST_CODE_PERMISSIONS
+                    )
                 }
-                true
             }
         }
         setHasOptionsMenu(true)

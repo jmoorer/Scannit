@@ -1,5 +1,6 @@
 package com.moor.scannit.ui.document
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -53,7 +54,8 @@ class PageFragment:Fragment() {
                 }
                 ocrButton.setOnClickListener {
                     val page=  doc.pages[pagesViewPager.currentItem]
-                    findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to page.uri))
+                    val action= PageFragmentDirections.actionPageFragmentToOcrFragment(Uri.parse(page.uri))
+                    findNavController().navigate(action)
                 }
             }
         })

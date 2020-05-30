@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Text" android:icon="@drawable/ic_text" android:id="@+id/textFragment"/>
+    <item android:title="Phone Numbers" android:icon="@drawable/ic_phone"/>
+    <item android:title="Emails" android:icon="@drawable/ic_email"/>
+    <item android:title="Links"  android:icon="@drawable/ic_link"/>
+</menu>

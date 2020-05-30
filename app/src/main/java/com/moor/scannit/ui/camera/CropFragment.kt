@@ -9,7 +9,7 @@ import androidx.core.graphics.toRect
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.isseiaoki.simplecropview.CropImageView
+
 
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentCropBinding

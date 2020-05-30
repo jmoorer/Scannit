@@ -2,6 +2,8 @@ package com.moor.scannit
 
 
 import android.app.ProgressDialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Resources
 import android.database.Cursor
@@ -10,7 +12,9 @@ import android.graphics.pdf.PdfDocument
 import android.media.ExifInterface
 import android.media.Image
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -92,7 +96,7 @@ val Float.dp: Int
 
 val Context.exportFolder
     get() = File(filesDir,"exports").apply {
-        if(exists())mkdirs();
+        if(!exists())mkdirs();
     }
 val Context.scanFolder
     get() = File(filesDir,"scans").apply { mkdir() }
@@ -154,11 +158,8 @@ fun Context.generatePdf(documet: Document, name:String = documet.name): File {
     }
 
 }
-fun RectF.toRect(): Rect? {
-    val rect = Rect()
-    rect.left = Math.round(left);
-    rect.top = Math.round(top);
-    rect.right = Math.round(right);
-    rect.bottom = Math.round(bottom);
-    return rect
+fun Context.setClipboard(text: String) {
+        val clipboard = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Copied Text", text)
+        clipboard.setPrimaryClip(clip)
 }
