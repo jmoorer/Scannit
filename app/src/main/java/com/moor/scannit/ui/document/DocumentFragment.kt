@@ -10,12 +10,14 @@ import android.provider.MediaStore
 import android.view.*
 import android.widget.EditText
 import androidx.core.content.FileProvider
+import androidx.core.view.marginStart
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.moor.scannit.*
 import com.moor.scannit.data.Document
 import com.moor.scannit.data.Page
@@ -25,6 +27,7 @@ import com.moor.scannit.ui.ProgressDialog
 import com.moor.scannit.ui.RowHeightDecoration
 import com.moor.scannit.ui.SpacesItemDecoration
 import com.moor.scannit.ui.camera.CameraViewModel
+import java.util.*
 
 
 class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
@@ -75,7 +78,7 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
                 adapter = pageAdapter
                 layoutManager = GridLayoutManager(context,2)
                 addItemDecoration(SpacesItemDecoration(16))
-                addItemDecoration(RowHeightDecoration(200))
+                //addItemDecoration(RowHeightDecoration(200))
             }
             actionPick.setOnClickListener {
                 pickImage()
@@ -111,13 +114,14 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     }
 
     private fun renameDocument(){
-        val editText= EditText(context);
-        editText.setText(document.name)
-        val dialog = AlertDialog.Builder(context)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_export, null)
+        val editText:EditText? =dialogView.findViewById(R.id.file_name_text_view)
+        editText?.setText(document.name)
+        val dialog = MaterialAlertDialogBuilder(context)
             .setMessage("Document Name")
-            .setView(editText)
+            .setView(dialogView)
             .setPositiveButton("OK") { _, i->
-                val name=editText.text.toString()
+                val name=editText?.text.toString()
                 if(name.isNotEmpty()){
                     document.name= name
                     viewModel.saveDocument(document)
@@ -129,15 +133,14 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     }
 
     private fun exportDocument(){
-        val builder = AlertDialog.Builder(requireContext())
-        val view=layoutInflater.inflate(R.layout.dialog_save,null)
-        var binding=DialogSaveBinding.bind(view).apply {
-            fileNameTextView.setText(document.name)
-        }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_export, null)
+        val editText:EditText? =dialogView.findViewById(R.id.file_name_text_view)
+        editText?.setText("${document.name}.pdf")
+        val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle("Export as")
-            .setView(view)
+            .setView(dialogView)
             .setPositiveButton("Save"){d,w->
-                val file = requireContext().generatePdf(document,binding.fileNameTextView.text.toString())
+                val file = requireContext().generatePdf(document,editText?.text.toString())
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 val uri: Uri? = FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID, file)
@@ -152,7 +155,7 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     }
 
     override fun onClick(page: Page, view: View) {
-       val action= DocumentFragmentDirections.actionDocumentFragmentToPageFragment()
+       val action= DocumentFragmentDirections.actionDocumentFragmentToPageFragment(document.pages.indexOfId(page.id))
         findNavController().navigate(action)
     }
 

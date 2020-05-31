@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.home.HomeFragment"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical">
 
 
@@ -20,7 +22,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/folder_list_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:background="@color/grey_200"/>
             <ImageView
                 android:visibility="invisible"
                 android:id="@+id/emptyView"
@@ -35,40 +38,68 @@
 
     </LinearLayout>
 
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:gravity="center"
-        android:layout_margin="32dp">
+        android:layout_gravity="bottom">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:src="@drawable/ic_search"
+            app:backgroundTint="@color/colorAccent"
+            app:fabSize="mini"
+            app:fab_showShadow="false"
+            app:layout_anchorGravity="end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/scan_button"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white"
+            app:elevation="0dp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/scan_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="0dp"
+            android:src="@drawable/ic_photo_camera"
+            app:backgroundTint="@color/colorAccent"
+            app:fabCustomSize="70dp"
+            app:fab_showShadow="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/pick_button"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/search_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:maxImageSize="40dp"
+            app:tint="@color/white"
+            app:elevation="0dp"/>
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/pick_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:backgroundTint="@color/colorAccent"
-            android:src="@drawable/ic_photo_library"
-            app:tint="@color/white"
-            android:layout_marginBottom="8dp"
-            app:layout_anchorGravity="end"
-            app:fabSize="mini"
             android:elevation="0dp"
+            android:src="@drawable/ic_photo_library"
+            app:backgroundTint="@color/colorAccent"
+            app:fabSize="mini"
             app:fab_showShadow="false"
-            />
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/scan_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:backgroundTint="@color/colorAccent"
-        android:src="@drawable/ic_photo_camera"
-        app:tint="@color/white"
-        android:layout_gravity="bottom|center"
-        app:fabCustomSize="70dp"
-        app:maxImageSize="40dp"
-        android:elevation="0dp"
-        app:fab_showShadow="false"
-        />
+            app:layout_anchorGravity="end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/scan_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white"
+            app:elevation="0dp"/>
 
-    </LinearLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

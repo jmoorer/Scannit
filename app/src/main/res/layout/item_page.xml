@@ -1,27 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/preview_image_view"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:elevation="8dp"
+    app:cardCornerRadius="2dp"
+    >
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_camera" />
-    <TextView
-        android:id="@+id/page_text_view"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_gravity="bottom"
-        android:layout_margin="8dp"
-        android:background="@drawable/badge"
-        android:textColor="@color/white"
-        android:text="56"
-        android:gravity="center"
-        android:textSize="10sp"
-        />
-</FrameLayout>
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/preview_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_camera"
+            />
+        <TextView
+            android:id="@+id/page_text_view"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="4dp"
+            android:background="@drawable/badge"
+            android:textColor="@color/white"
+            android:text="56"
+            android:gravity="center"
+            android:textSize="12sp"
+            />
+    </FrameLayout>
+
+
+</com.google.android.material.card.MaterialCardView>

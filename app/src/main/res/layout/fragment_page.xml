@@ -5,7 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/grey_200">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pages_view_pager"
@@ -16,53 +17,56 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/colorPrimary">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="8dp">
 
 
         <ImageButton
             android:id="@+id/ocr_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-
+            style="@style/ImageAction"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@null"
-            android:scaleType="fitCenter"
-            android:tint="@color/white"
+            android:src="@drawable/ic_ocr_on"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/delete_button"
+            app:layout_constraintEnd_toStartOf="@+id/download_button"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_scan" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/delete_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/download_button"
+            style="@style/ImageAction"
             android:background="@null"
-            android:scaleType="fitCenter"
-            android:tint="@color/white"
+            android:src="@drawable/ic_file_download"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/page_add_button"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/ocr_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_delete" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/page_add_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            style="@style/ImageAction"
             android:background="@null"
-            android:scaleType="fitCenter"
-            android:tint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/delete_button"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/download_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_note_add" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            style="@style/ImageAction"
+            android:background="@null"
+            android:src="@drawable/ic_delete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/delete_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_note_add" />
+            app:layout_constraintStart_toEndOf="@+id/page_add_button"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

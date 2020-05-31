@@ -21,6 +21,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.moor.scannit.R
 import com.moor.scannit.RESULT_LOAD_IMAGE
 import com.moor.scannit.data.Document
@@ -65,21 +66,7 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
                 val action = HomeFragmentDirections.actionHomeFragmentToCameraFragment(0)
                 findNavController().navigate(action)
             }
-//            bar.setOnMenuItemClickListener { item ->
-//                when(item.itemId){
-//                    R.id.action_open->{
-//                        if(allPermissionsGranted()){
-//                            pickImage()
-//                        }else{
-//                            requestPermissions(
-//                                REQUIRED_PERMISSIONS,
-//                                REQUEST_CODE_PERMISSIONS
-//                            )
-//                        }
-//                    }
-//                }
-//                true
-//            }
+
             pickButton.setOnClickListener {
                 if(allPermissionsGranted()){
                     pickImage()
@@ -137,7 +124,7 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
                        when(item.itemId){
                            R.id.action_delete->{
                                val ids= documentAdapter.selectedIds
-                               val builder = AlertDialog.Builder(requireContext())
+                               val builder = MaterialAlertDialogBuilder(requireContext())
                                builder.setMessage("Are you sure you want to delete ${ids.size} document(s) ?")
                                builder.setCancelable(false)
                                builder.setPositiveButton("Yes"){ dialog, which ->
@@ -160,10 +147,6 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
               callback.startActionMode(view,R.menu.menu_action_home)
           }
 
-
-
-
-
          documentAdapter.canEdit=true
          documentAdapter.selectedIds.apply {
              clear()
@@ -175,25 +158,6 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
     override fun onClick(document: Document, view: View) {
         val action = HomeFragmentDirections.actionHomeFragmentToDocumentFragment(document.id)
         findNavController().navigate(action)
-    }
-
-
-    private fun renameFolder(document: Document){
-        val editText= EditText(context);
-        editText.setText(document.name)
-        val dialog = AlertDialog.Builder(context)
-            .setMessage("Folder Name")
-            .setView(editText)
-            .setPositiveButton("OK") { _, i->
-                val name=editText.text.toString()
-                if(name.isNotEmpty()){
-                    document.name= name
-                    viewModel.saveDocument(document)
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .create();
-        dialog.show();
     }
 
 

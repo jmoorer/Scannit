@@ -66,6 +66,10 @@
         <action
             android:id="@+id/action_pageFragment_to_ocrFragment"
             app:destination="@id/ocrFragment" />
+        <argument
+            android:name="pageIndex"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/cropFragment"
@@ -94,5 +98,9 @@
         <argument
             android:name="uri"
             app:argType="android.net.Uri" />
+        <argument
+            android:name="rotation"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 </navigation>

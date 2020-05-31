@@ -9,9 +9,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pages_grid_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:background="@color/grey_200"
+        />
 
-    </androidx.recyclerview.widget.RecyclerView>
 
 <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
 <!--        android:id="@+id/addPageButtonButton"-->

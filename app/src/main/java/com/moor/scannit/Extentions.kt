@@ -12,7 +12,6 @@ import android.graphics.pdf.PdfDocument
 import android.media.ExifInterface
 import android.media.Image
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 
 import android.text.format.DateFormat
@@ -126,13 +125,13 @@ fun Fragment.createProgressDialog(message:String): ProgressDialog {
     return progressDialog
 }
 
-fun Context.generatePdf(documet: Document, name:String = documet.name): File {
+fun Context.generatePdf(document: Document, name:String = document.name): File {
 
     try {
 
         val file = File(exportFolder,"$name.pdf")
         var doc= PdfDocument()
-        documet.pages.forEach { page->
+        document.pages.forEach { page->
             var bitmap=loadBitmap(Uri.parse(page.uri))
             var pi= PdfDocument.PageInfo.Builder(bitmap.width,bitmap.height,page.number).create()
             var pg= doc.startPage(pi)
@@ -158,6 +157,8 @@ fun Context.generatePdf(documet: Document, name:String = documet.name): File {
     }
 
 }
+
+
 fun Context.setClipboard(text: String) {
         val clipboard = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("Copied Text", text)

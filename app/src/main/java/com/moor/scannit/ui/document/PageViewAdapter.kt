@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.moor.scannit.data.Page
 import com.moor.scannit.databinding.ItemPageBinding
+import com.moor.scannit.databinding.ItemPageViewBinding
 import com.moor.scannit.inflater
 import com.moor.scannit.load
 import com.moor.scannit.ui.BoundViewHolder
 
 
-class PageAdapter(val pages:List<Page>):RecyclerView.Adapter<BoundViewHolder<ItemPageBinding>>() {
+class PageViewAdapter(val pages:List<Page>):RecyclerView.Adapter<BoundViewHolder<ItemPageViewBinding>>() {
 
     interface  PageAdapterCallback{
         fun  onLongClick(page: Page, view: View)
@@ -22,22 +23,18 @@ class PageAdapter(val pages:List<Page>):RecyclerView.Adapter<BoundViewHolder<Ite
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BoundViewHolder<ItemPageBinding> {
+    ): BoundViewHolder<ItemPageViewBinding> {
 
-        val itemView=ItemPageBinding.inflate(parent.inflater(),parent,false)
-        val layoutParams: ViewGroup.LayoutParams = itemView.root.layoutParams
-        layoutParams.height = ((parent.height * 0.3).toInt())
-        itemView.root.layoutParams = layoutParams
+        val itemView=ItemPageViewBinding.inflate(parent.inflater(),parent,false)
         return  BoundViewHolder(itemView)
     }
 
     override fun getItemCount()= pages.size
 
-    override fun onBindViewHolder(holder: BoundViewHolder<ItemPageBinding>, position: Int) {
+    override fun onBindViewHolder(holder: BoundViewHolder<ItemPageViewBinding>, position: Int) {
           val page= pages[position]
           holder.binding.apply {
               previewImageView.load(Uri.parse(page.uri))
-              pageTextView.text="${page.number}"
               root.setOnClickListener {v-> listener?.onClick(page,v) }
           }
     }
