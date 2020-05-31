@@ -10,4 +10,22 @@
         android:name="com.moor.scannit.ui.ocr.TextFragment"
         android:label="@string/no_name"
         tools:layout="@layout/fragment_text" />
+    <fragment
+        android:id="@+id/phoneNumberFragment"
+        android:name="com.moor.scannit.ui.ocr.PhoneNumberFragment"
+        android:label="@string/no_name"
+        tools:layout="@layout/fragment_list" />
+    <fragment
+        android:id="@+id/emailFragment"
+        android:name="com.moor.scannit.ui.ocr.EmailFragment"
+        android:label="@string/no_name" />
+    <fragment
+        android:id="@+id/linkFragment"
+        android:name="com.moor.scannit.ui.ocr.LinkFragment"
+        android:label="@string/no_name" />
+    <fragment
+        android:id="@+id/imageFragment"
+        android:name="com.moor.scannit.ui.ocr.ImageFragment"
+        android:label="@string/no_name"
+        tools:layout="@layout/fragment_image" />
 </navigation>

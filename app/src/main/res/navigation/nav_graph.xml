@@ -89,7 +89,7 @@
     <fragment
         android:id="@+id/ocrFragment"
         android:name="com.moor.scannit.ui.ocr.OcrFragment"
-        android:label="@string/no_name"
+        android:label="Extracted Text"
         tools:layout="@layout/fragment_ocr">
         <argument
             android:name="uri"

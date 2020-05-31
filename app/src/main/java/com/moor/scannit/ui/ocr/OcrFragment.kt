@@ -1,5 +1,6 @@
 package com.moor.scannit.ui.ocr
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -7,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.children
+import androidx.core.view.forEach
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -51,6 +54,7 @@ class OcrFragment : Fragment() {
         val fragmentContainer = view.findViewById<View>(R.id.nav_host)
         navController = Navigation.findNavController(fragmentContainer)
     }
+    @SuppressLint("ResourceAsColor")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -64,15 +68,36 @@ class OcrFragment : Fragment() {
                 dialog.stopLoadingDialog()
                 binding.apply {
                     bottomNavigation.setupWithNavController(navController)
+
+                    bottomNavigation.menu.forEach {
+                        val badge = bottomNavigation.getOrCreateBadge(it.itemId)
+                        badge.backgroundColor= resources.getColor(R.color.colorAccent)
+                        when(it.itemId){
+                            R.id.emailFragment->{
+                                badge?.isVisible= state.emails.any()
+                                badge?.number= state.emails.size
+                                it.isEnabled = state.emails.any()
+                            }
+                            R.id.linkFragment->{
+                                badge?.isVisible= state.links.any()
+                                badge?.number= state.links.size
+                                it.isEnabled = state.links.any()
+                            }
+                            R.id.phoneNumberFragment->{
+                                badge?.isVisible= state.numbers.any()
+                                badge?.number= state.numbers.size
+                                it.isEnabled = state.numbers.any()
+                            }
+                            else-> badge.isVisible=false
+
+                        }
+                    }
                 }
 
             }
-
-
         })
-
-
     }
+
 
 
 }

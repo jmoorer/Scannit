@@ -17,7 +17,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        style="@style/ExtractedText"
+        />
 
     <ImageButton
         android:id="@+id/copy_button"

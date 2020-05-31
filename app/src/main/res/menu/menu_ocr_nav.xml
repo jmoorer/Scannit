@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="Text" android:icon="@drawable/ic_text" android:id="@+id/textFragment"/>
-    <item android:title="Phone Numbers" android:icon="@drawable/ic_phone"/>
-    <item android:title="Emails" android:icon="@drawable/ic_email"/>
-    <item android:title="Links"  android:icon="@drawable/ic_link"/>
+    <item android:title="Phone Numbers" android:icon="@drawable/ic_phone" android:id="@+id/phoneNumberFragment"/>
+    <item android:title="Emails" android:icon="@drawable/ic_email" android:id="@+id/emailFragment"/>
+    <item android:title="Links"  android:icon="@drawable/ic_link" android:id="@+id/linkFragment"/>
+    <item android:title="Image"  android:icon="@drawable/ic_image" android:id="@+id/imageFragment"/>
 </menu>
