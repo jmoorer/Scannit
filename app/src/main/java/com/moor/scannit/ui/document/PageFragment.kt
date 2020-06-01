@@ -68,6 +68,7 @@ class PageFragment:Fragment() {
                     findNavController().navigate(action)
                 }
                 deleteButton.setOnClickListener {
+
                     val page=  doc.pages[pagesViewPager.currentItem]
                     deletePage(page)
                 }
@@ -102,12 +103,12 @@ class PageFragment:Fragment() {
     private fun exportDocument(page:Page){
         val dialogView = layoutInflater.inflate(R.layout.dialog_export, null)
         val editText: EditText? =dialogView.findViewById(R.id.file_name_text_view)
-        editText?.setText("${document.name}.pdf")
+        editText?.setText("Page.pdf")
         val builder = MaterialAlertDialogBuilder(requireContext())
-        builder.setTitle("Export as")
+        builder.setTitle("File Name")
             .setView(dialogView)
             .setPositiveButton("Save"){d,w->
-                val file = requireContext().generatePdf(document,editText?.text.toString())
+                val file = requireContext().generatePdf(listOf(page),editText?.text.toString())
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 val uri: Uri? = FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID, file)

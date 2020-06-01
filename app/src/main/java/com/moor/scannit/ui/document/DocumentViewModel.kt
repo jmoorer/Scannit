@@ -31,15 +31,11 @@ class DocumentViewModel:ViewModel() {
     }
     fun removePage(page: Page){
         document.value?.let { doc->
-            doc.pages.apply {
-                remove(page)
-                forEachIndexed{ i, p->
+            doc.pages.remove(page)
+            doc.pages.forEachIndexed{ i, p->
                     p.number=i+1
-                }
-                documentBox.put(doc)
             }
+            documentBox.put(doc)
         }
-
-
     }
 }

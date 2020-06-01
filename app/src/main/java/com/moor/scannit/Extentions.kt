@@ -7,13 +7,13 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Resources
 import android.database.Cursor
-import android.graphics.*
-import android.graphics.pdf.PdfDocument
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.media.ExifInterface
 import android.media.Image
 import android.net.Uri
 import android.provider.MediaStore
-
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -22,7 +22,10 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.moor.scannit.data.Document
+import com.itextpdf.text.Document
+import com.itextpdf.text.PageSize
+import com.itextpdf.text.pdf.PdfWriter
+import com.moor.scannit.data.Page
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
@@ -125,31 +128,26 @@ fun Fragment.createProgressDialog(message:String): ProgressDialog {
     return progressDialog
 }
 
-fun Context.generatePdf(document: Document, name:String = document.name): File {
+fun Context.generatePdf(pages:List<Page>, name:String): File {
 
     try {
+        val file = File(exportFolder,name)
+        val doc = Document()
+        val writer=PdfWriter.getInstance(doc, FileOutputStream(file))
 
-        val file = File(exportFolder,"$name.pdf")
-        var doc= PdfDocument()
-        document.pages.forEach { page->
-            var bitmap=loadBitmap(Uri.parse(page.uri))
-            var pi= PdfDocument.PageInfo.Builder(bitmap.width,bitmap.height,page.number).create()
-            var pg= doc.startPage(pi)
-            var canvas= pg.canvas
-            var paint= Paint().apply {
-                color = Color.parseColor("#FFFFFF")
-            }
-            canvas.drawPaint(paint)
+        doc.pageSize = PageSize.A4;
+        doc.open()
 
-            bitmap= Bitmap.createScaledBitmap(bitmap,bitmap.width,bitmap.height,true)
-            paint.color=Color.BLUE
-
-            canvas.drawBitmap(bitmap,0f,0f,null)
-
-            doc.finishPage(pg)
+        pages.forEach { page->
+            doc.newPage()
+            val indentation = 0
+            val image=com.itextpdf.text.Image.getInstance(page.uri)
+            val scalar: Float = (doc.pageSize.width - doc.leftMargin() - doc.rightMargin() - indentation) / image.width * 100
+            image.scalePercent(scalar)
+            doc.add(image);
         }
-        doc.writeTo(FileOutputStream(file))
-        doc.close()
+        doc.close();
+        writer.close();
         return file
     }
     catch (e: Exception){

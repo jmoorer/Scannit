@@ -121,7 +121,7 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
                 }
                 else->documentBox.get(documentId)
         }
-        state.postValue(current?.copy(document=document))
+        state.value=current?.copy(document=document)
     }
 
 

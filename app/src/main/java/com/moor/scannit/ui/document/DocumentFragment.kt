@@ -78,7 +78,6 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
                 adapter = pageAdapter
                 layoutManager = GridLayoutManager(context,2)
                 addItemDecoration(SpacesItemDecoration(16))
-                //addItemDecoration(RowHeightDecoration(200))
             }
             actionPick.setOnClickListener {
                 pickImage()
@@ -140,7 +139,7 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
         builder.setTitle("Export as")
             .setView(dialogView)
             .setPositiveButton("Save"){d,w->
-                val file = requireContext().generatePdf(document,editText?.text.toString())
+                val file = requireContext().generatePdf(document.pages,editText?.text.toString())
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 val uri: Uri? = FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID, file)

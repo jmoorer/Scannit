@@ -29,7 +29,7 @@
     </style>
 
     <style name="OcrButton">
-        <item name="android:tint">@color/black</item>
+        <item name="android:tint">@color/colorAccent</item>
         <item name="android:layout_width">32dp</item>
         <item name="android:layout_height">32dp</item>
         <item name="android:layout_gravity">center</item>
