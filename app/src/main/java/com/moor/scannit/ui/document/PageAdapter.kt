@@ -37,7 +37,7 @@ class PageAdapter(val pages:List<Page>):RecyclerView.Adapter<BoundViewHolder<Ite
           val page= pages[position]
           holder.binding.apply {
               previewImageView.load(Uri.parse(page.uri))
-              pageTextView.text="${position+1}"
+              pageTextView.text="${page.number}"
               root.setOnClickListener {v-> listener?.onClick(page,v) }
           }
     }

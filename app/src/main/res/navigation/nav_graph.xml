@@ -41,6 +41,9 @@
         <action
             android:id="@+id/action_cameraFragment_to_ocrFragment"
             app:destination="@id/ocrFragment" />
+        <action
+            android:id="@+id/action_cameraFragment_to_imageProcessFragment"
+            app:destination="@id/imageProcessFragment" />
     </fragment>
     <fragment
         android:id="@+id/documentFragment"
@@ -103,4 +106,9 @@
             app:argType="integer"
             android:defaultValue="0" />
     </fragment>
+    <fragment
+        android:id="@+id/imageProcessFragment"
+        android:name="com.moor.scannit.ui.camera.ImageProcessFragment"
+        android:label="fragment_image_process"
+        tools:layout="@layout/fragment_image_process" />
 </navigation>

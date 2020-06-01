@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.*
 import android.widget.EditText
@@ -17,6 +18,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.moor.scannit.*
 import com.moor.scannit.data.Document
@@ -42,6 +45,16 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     val pages= arrayListOf<Page>()
     val pageAdapter=PageAdapter(pages).apply {
         listener= this@DocumentFragment
+        registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
+
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+            Handler().postDelayed({
+                viewModel.reIndexPages(pages)
+            },300)
+        }
+
+    })
     }
 
     private lateinit var document:Document
@@ -58,12 +71,14 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
         viewModel.getDocument().observe(viewLifecycleOwner, Observer { doc->
             supportActionBar!!.title = doc.name
             document = doc
-            pages.clear()
-            doc.pages.any().let {
-               pages.addAll(doc.pages)
-               pageAdapter.notifyDataSetChanged()
-            }
 
+        })
+        viewModel.getPages().observe(viewLifecycleOwner, Observer { pgs->
+            pages.clear()
+            pgs.any().let {
+                pages.addAll(pgs.sortedBy { p->p.number })
+                pageAdapter.notifyDataSetChanged()
+            }
         })
     }
 
@@ -78,6 +93,7 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
                 adapter = pageAdapter
                 layoutManager = GridLayoutManager(context,2)
                 addItemDecoration(SpacesItemDecoration(16))
+                helper.attachToRecyclerView(this)
             }
             actionPick.setOnClickListener {
                 pickImage()
@@ -173,5 +189,34 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
             findNavController().navigate(R.id.cropFragment)
         }
     }
+
+    private val helper= ItemTouchHelper(object : ItemTouchHelper.Callback(){
+        override fun getMovementFlags(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ): Int {
+            return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+                ItemTouchHelper.DOWN or ItemTouchHelper.UP or ItemTouchHelper.START or ItemTouchHelper.END);
+        }
+
+        override fun onMove(
+            recyclerView: RecyclerView,
+            dragged: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            val targetPosition= target.adapterPosition
+            val draggedPosition= dragged.adapterPosition
+
+            Collections.swap(pages,draggedPosition,targetPosition)
+
+            pageAdapter.notifyItemMoved(draggedPosition,targetPosition)
+
+            return true
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+        }
+    })
 
 }

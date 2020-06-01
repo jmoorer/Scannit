@@ -1,30 +1,34 @@
 package com.moor.scannit.ui.document
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import com.moor.scannit.data.Document
-import com.moor.scannit.data.Document_
-import com.moor.scannit.data.ObjectBox
-import com.moor.scannit.data.Page
+import android.os.Handler
+import androidx.lifecycle.*
+import com.moor.scannit.data.*
 import io.objectbox.Box
 import io.objectbox.android.ObjectBoxLiveData
 import io.objectbox.kotlin.boxFor
 import io.objectbox.kotlin.query
 
 class DocumentViewModel:ViewModel() {
-    private val document: MutableLiveData<Document> = MutableLiveData()
+    private val document: MediatorLiveData<Document> = MediatorLiveData()
+    private  val pages :MediatorLiveData<List<Page>> = MediatorLiveData()
     private  val documentBox: Box<Document> = ObjectBox.boxStore.boxFor()
+    private  val pageBox :Box<Page> = ObjectBox.boxStore.boxFor()
+
 
 
     fun loadDocument(id:Long) {
-        documentBox.query { equal(Document_.id,id) }.subscribe().observer {
+        val query =  documentBox.query { equal(Document_.id,id)}
+        document.addSource(ObjectBoxLiveData(query)){
             document.postValue(it.first())
         }
+        pages.addSource(ObjectBoxLiveData( pageBox.query{equal(Page_.documentId,id)})){
+            pages.postValue(it)
+        }
+
     }
 
     fun getDocument():LiveData<Document> = document
+    fun getPages():LiveData<List<Page>> = pages
 
     fun saveDocument(document: Document) {
         documentBox.put(document)
@@ -32,10 +36,15 @@ class DocumentViewModel:ViewModel() {
     fun removePage(page: Page){
         document.value?.let { doc->
             doc.pages.remove(page)
-            doc.pages.forEachIndexed{ i, p->
-                    p.number=i+1
-            }
+            reIndexPages(doc.pages)
             documentBox.put(doc)
+        }
+    }
+
+    fun reIndexPages(pages:List<Page>){
+        pages.forEachIndexed{ i, p->
+            p.number=i+1
+            pageBox.put(p)
         }
     }
 }
