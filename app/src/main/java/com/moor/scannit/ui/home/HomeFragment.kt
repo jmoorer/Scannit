@@ -90,18 +90,16 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.getState().observe(viewLifecycleOwner, Observer { state->
-            state?.let {
-                documents.clear()
-                if(state.documents.any()){
-                    documents.addAll(state.documents)
-                    binding.emptyView.visibility=View.INVISIBLE
-                }else{
-                    binding.emptyView.visibility=View.VISIBLE
-                }
-                documentAdapter.notifyDataSetChanged()
-            }
 
+        viewModel.getDocuments().observe(viewLifecycleOwner, Observer {docs->
+            documents.clear()
+            if(docs.any()){
+                documents.addAll(docs)
+                binding.emptyView.visibility=View.INVISIBLE
+            }else{
+                binding.emptyView.visibility=View.VISIBLE
+            }
+            documentAdapter.notifyDataSetChanged()
         })
 
     }
@@ -121,8 +119,8 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
                     viewModel.filterDocuments(text)
                     return true
                 }
-
             })
+
         }
         super.onCreateOptionsMenu(menu, inflater)
 

@@ -15,9 +15,7 @@ class HomeViewModel:ViewModel() {
 
     private  val documentBox:Box<Document> = ObjectBox.boxStore.boxFor()
 
-    private var state= MediatorLiveData<HomeState?>()
-
-    private  var query:Query<Document>
+    private  val params = MutableLiveData(SearchParams())
 
     enum class  SortOrder{
         ASCENDING_NAME,
@@ -25,44 +23,32 @@ class HomeViewModel:ViewModel() {
         ASCENDING_DATE,
         DESCENDING_DATE
     }
+    data class  SearchParams(val query: String="",val sortOrder: SortOrder?=null)
 
-    data class HomeState(
-        val loading:Boolean=false,
-        val documents:List<Document>,
-        var currentFolderId:Long?=null
-    )
-    init {
-        state.value = HomeState(documents = emptyList())
-        query = documentBox.query().eager(Document_.pages).build()
-        state.addSource(ObjectBoxLiveData(query)){ documents->
-            state.postValue(state.value?.copy(documents = documents))
-        }
+    fun getDocuments() = Transformations.switchMap(params){sp->
+
+        val query= documentBox.query()
+            .filter {  sp.query.isBlank()||it.name.contains(sp.query,true) }
+            .sort(when(sp.sortOrder){
+                SortOrder.ASCENDING_NAME-> compareBy { it.name }
+                SortOrder.DESCENDING_NAME-> compareByDescending { it.name }
+                SortOrder.ASCENDING_DATE -> compareBy { it.createDate }
+                SortOrder.DESCENDING_DATE -> compareByDescending { it.createDate }
+                else -> compareBy { it.id }
+            }).build()
+            return@switchMap ObjectBoxLiveData(query)
     }
-
-    fun getState():LiveData<HomeState?> = state
-
 
     fun deleteDocuments(ids:LongArray){
         documentBox.remove(*ids)
     }
 
     fun filterDocuments(q:String){
-        val filterQuery = documentBox.query().filter { q.isBlank()||it.name.contains(q,true) }.eager(Document_.pages).build()
-        state.postValue(state.value?.copy(documents = filterQuery.find()))
+        params.postValue(params.value?.copy(query = q))
     }
 
     fun sortDocuments(order: SortOrder){
-        val docs=documentBox.query().sort(when(order){
-                SortOrder.ASCENDING_NAME-> compareBy { it.name }
-                SortOrder.DESCENDING_NAME-> compareByDescending { it.name }
-                SortOrder.ASCENDING_DATE -> compareBy { it.createDate }
-                SortOrder.DESCENDING_DATE -> compareByDescending { it.createDate }
-        }).build().find()
-        state.postValue(state.value?.copy(documents = docs))
+        params.postValue(params.value?.copy(sortOrder = order))
     }
-
-
-
-
 
 }

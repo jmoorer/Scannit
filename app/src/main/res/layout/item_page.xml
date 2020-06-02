@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp">
+
         <ImageView
             android:id="@+id/preview_image_view"
             android:layout_width="match_parent"
@@ -31,6 +32,17 @@
             android:text="56"
             android:gravity="center"
             android:textSize="12sp"
+            />
+        <CheckBox
+            android:id="@+id/selected_checkbox"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="4dp"
+            android:buttonTint="@color/colorAccent"
+            android:checked="true"
+            android:button="@null"
+            android:background="@drawable/select_page"
             />
     </FrameLayout>
 

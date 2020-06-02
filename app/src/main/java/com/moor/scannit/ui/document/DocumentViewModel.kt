@@ -50,7 +50,9 @@ class DocumentViewModel:ViewModel() {
             documentBox.put(doc)
         }
     }
-
+     fun removePages(ids:LongArray){
+         pageBox.remove(*ids)
+     }
     fun reIndexPages(pages:List<Page>){
         pages.forEachIndexed{ i, p->
             p.number=i+1

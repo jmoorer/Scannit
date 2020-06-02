@@ -26,14 +26,16 @@ import com.moor.scannit.data.Document
 import com.moor.scannit.data.Page
 import com.moor.scannit.databinding.DialogSaveBinding
 import com.moor.scannit.databinding.FragmentDocumentBinding
+import com.moor.scannit.ui.AdapterCallback
 import com.moor.scannit.ui.ProgressDialog
 import com.moor.scannit.ui.RowHeightDecoration
 import com.moor.scannit.ui.SpacesItemDecoration
 import com.moor.scannit.ui.camera.CameraViewModel
+import com.moor.scannit.ui.home.PrimaryActionModeCallback
 import java.util.*
 
 
-class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
+class DocumentFragment : Fragment(), AdapterCallback<Page> {
 
 
     private lateinit var binding: FragmentDocumentBinding
@@ -123,6 +125,9 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
                 exportDocument()
                 return true
             }
+            R.id.action_delete->{
+                openActionMode()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -165,8 +170,11 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     }
 
     override fun onLongClick(page: Page, view: View) {
+        openActionMode()
+        pageAdapter.selectedIds.add(page.id)
 
     }
+
 
     override fun onClick(page: Page, view: View) {
        val action= DocumentFragmentDirections.actionDocumentFragmentToPageFragment(page.number)
@@ -189,7 +197,48 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
         }
     }
 
-    private val helper= ItemTouchHelper(object : ItemTouchHelper.Callback(){
+    private fun openActionMode(){
+        PrimaryActionModeCallback().also { callback->
+            callback.onActionItemClickListener= object : PrimaryActionModeCallback.OnActionItemClickListener {
+                override fun onActionItemClick(item: MenuItem) {
+                    when(item.itemId){
+                        R.id.action_delete->{
+                            val ids= pageAdapter.selectedIds
+                            if (ids.any()){
+                                val builder = MaterialAlertDialogBuilder(requireContext())
+                                builder.setMessage("Are you sure you want to delete ${ids.size} pages(s) ?")
+                                builder.setCancelable(false)
+                                builder.setPositiveButton("Yes"){ dialog, which ->
+                                    viewModel.removePages(ids.toLongArray())
+                                    viewModel.reIndexPages(pages.filter { !ids.contains(it.id) })
+                                }
+                                builder.setNegativeButton("No",{_,a->})
+                                builder.setOnDismissListener {
+                                    callback.finishActionMode()
+                                }
+                                builder.show()
+                            }else{
+                                callback.finishActionMode()
+                            }
+
+                        }
+                    }
+                }
+
+                override fun onDestroyActionMode() {
+                    pageAdapter.canEdit=false
+                }
+            }
+            callback.startActionMode(requireView(),R.menu.menu_action_home)
+        }
+
+        pageAdapter.canEdit=true
+        pageAdapter.selectedIds.apply {
+            clear()
+        }
+    }
+
+    private val helper = ItemTouchHelper(object : ItemTouchHelper.Callback(){
         override fun getMovementFlags(
             recyclerView: RecyclerView,
             viewHolder: RecyclerView.ViewHolder
@@ -215,6 +264,10 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
+        }
+
+        override fun isLongPressDragEnabled(): Boolean {
+            return !pageAdapter.canEdit
         }
     })
 
