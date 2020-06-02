@@ -15,13 +15,23 @@ class DocumentViewModel:ViewModel() {
     private  val pageBox :Box<Page> = ObjectBox.boxStore.boxFor()
 
 
+    private var pageQuery:ObjectBoxLiveData<Page>?=null
+    private var documentQuery:ObjectBoxLiveData<Document>?=null
+
 
     fun loadDocument(id:Long) {
-        val query =  documentBox.query { equal(Document_.id,id)}
-        document.addSource(ObjectBoxLiveData(query)){
+
+        documentQuery?.let {document.removeSource(it)}
+        pageQuery?.let { pages.removeSource(it) }
+
+        documentQuery=ObjectBoxLiveData(documentBox.query { equal(Document_.id,id)})
+        pageQuery=ObjectBoxLiveData( pageBox.query{equal(Page_.documentId,id)})
+
+        document.addSource(documentQuery!!){
             document.postValue(it.first())
         }
-        pages.addSource(ObjectBoxLiveData( pageBox.query{equal(Page_.documentId,id)})){
+
+        pages.addSource(pageQuery!!){
             pages.postValue(it)
         }
 

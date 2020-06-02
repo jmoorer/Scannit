@@ -45,16 +45,6 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     val pages= arrayListOf<Page>()
     val pageAdapter=PageAdapter(pages).apply {
         listener= this@DocumentFragment
-        registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
-
-        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
-            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
-            Handler().postDelayed({
-                viewModel.reIndexPages(pages)
-            },300)
-        }
-
-    })
     }
 
     private lateinit var document:Document
@@ -90,7 +80,16 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
         binding = FragmentDocumentBinding.inflate( inflater,container, false).apply {
 
             pagesGridView.apply {
-                adapter = pageAdapter
+                adapter = pageAdapter.apply {
+                    registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
+                        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+                            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+                            Handler().postDelayed({
+                                viewModel.reIndexPages(pages)
+                            },300)
+                        }
+                    })
+                }
                 layoutManager = GridLayoutManager(context,2)
                 addItemDecoration(SpacesItemDecoration(16))
                 helper.attachToRecyclerView(this)
