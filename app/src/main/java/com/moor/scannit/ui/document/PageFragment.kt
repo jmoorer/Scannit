@@ -49,38 +49,38 @@ class PageFragment:Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.getDocument().observe(viewLifecycleOwner, Observer { doc->
+        viewModel.getPages().observe(viewLifecycleOwner, Observer { pages->
             binding.apply {
-                pagerAdapter = PageViewAdapter(doc.pages)
+                pagerAdapter = PageViewAdapter(pages)
 
                 pagesViewPager.adapter= pagerAdapter
                 pagesViewPager.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
                     override fun onPageSelected(position: Int) {
                         super.onPageSelected(position)
-                        supportActionBar?.title="Page ${position+1} of ${doc.pages.count()}"
+                        supportActionBar?.title="Page ${position+1} of ${pages.count()}"
                     }
                 })
 
-                pagesViewPager.setCurrentItem(args.pageIndex,false)
+                pagesViewPager.setCurrentItem(args.pageIndex-1,false)
 
                 pageAddButton.setOnClickListener {
-                    val action = PageFragmentDirections.actionPageFragmentToCameraFragment(doc.id)
+                    val action = PageFragmentDirections.actionPageFragmentToCameraFragment(pages.first().document.targetId)
                     findNavController().navigate(action)
                 }
                 deleteButton.setOnClickListener {
 
-                    val page=  doc.pages[pagesViewPager.currentItem]
+                    val page=  pages[pagesViewPager.currentItem]
                     deletePage(page)
                 }
                 ocrButton.setOnClickListener {
-                    val page=  doc.pages[pagesViewPager.currentItem]
+                    val page=  pages[pagesViewPager.currentItem]
                     val action= PageFragmentDirections.actionPageFragmentToOcrFragment(Uri.parse(page.uri))
                     findNavController().navigate(action)
                 }
 
 
                 downloadButton.setOnClickListener {
-                    val page=  doc.pages[pagesViewPager.currentItem]
+                    val page=  pages[pagesViewPager.currentItem]
                     exportDocument(page)
                 }
             }

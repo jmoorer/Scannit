@@ -110,6 +110,7 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
         inflater.inflate(R.menu.menu_home,menu)
         val searchManager = context?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         (menu.findItem(R.id.search).actionView as SearchView).apply {
+            maxWidth = Integer.MAX_VALUE;
             setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
             setOnQueryTextListener(object :SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -199,6 +200,16 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
             cameraViewModel.setImage(BitmapFactory.decodeFile(path))
             findNavController().navigate(R.id.cropFragment)
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.action_sort_name_asc->viewModel.sortDocuments(HomeViewModel.SortOrder.ASCENDING_NAME)
+            R.id.action_sort_name_desc->viewModel.sortDocuments(HomeViewModel.SortOrder.DESCENDING_NAME)
+            R.id.action_sort_date_asc->viewModel.sortDocuments(HomeViewModel.SortOrder.ASCENDING_DATE)
+            R.id.action_sort_date_desc->viewModel.sortDocuments(HomeViewModel.SortOrder.DESCENDING_DATE)
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {

@@ -169,7 +169,7 @@ class DocumentFragment : Fragment(), PageAdapter.PageAdapterCallback {
     }
 
     override fun onClick(page: Page, view: View) {
-       val action= DocumentFragmentDirections.actionDocumentFragmentToPageFragment(document.pages.indexOfId(page.id))
+       val action= DocumentFragmentDirections.actionDocumentFragmentToPageFragment(page.number)
         findNavController().navigate(action)
     }
 

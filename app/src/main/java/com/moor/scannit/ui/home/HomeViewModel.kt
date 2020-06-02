@@ -19,6 +19,12 @@ class HomeViewModel:ViewModel() {
 
     private  var query:Query<Document>
 
+    enum class  SortOrder{
+        ASCENDING_NAME,
+        DESCENDING_NAME,
+        ASCENDING_DATE,
+        DESCENDING_DATE
+    }
 
     data class HomeState(
         val loading:Boolean=false,
@@ -43,6 +49,16 @@ class HomeViewModel:ViewModel() {
     fun filterDocuments(q:String){
         val filterQuery = documentBox.query().filter { q.isBlank()||it.name.contains(q,true) }.eager(Document_.pages).build()
         state.postValue(state.value?.copy(documents = filterQuery.find()))
+    }
+
+    fun sortDocuments(order: SortOrder){
+        val docs=documentBox.query().sort(when(order){
+                SortOrder.ASCENDING_NAME-> compareBy { it.name }
+                SortOrder.DESCENDING_NAME-> compareByDescending { it.name }
+                SortOrder.ASCENDING_DATE -> compareBy { it.createDate }
+                SortOrder.DESCENDING_DATE -> compareByDescending { it.createDate }
+        }).build().find()
+        state.postValue(state.value?.copy(documents = docs))
     }
 
 

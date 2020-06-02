@@ -25,7 +25,7 @@ class DocumentViewModel:ViewModel() {
         pageQuery?.let { pages.removeSource(it) }
 
         documentQuery=ObjectBoxLiveData(documentBox.query { equal(Document_.id,id)})
-        pageQuery=ObjectBoxLiveData( pageBox.query{equal(Page_.documentId,id)})
+        pageQuery=ObjectBoxLiveData( pageBox.query{equal(Page_.documentId,id).order(Page_.number)})
 
         document.addSource(documentQuery!!){
             document.postValue(it.first())

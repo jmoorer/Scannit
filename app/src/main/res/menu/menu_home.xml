@@ -5,6 +5,20 @@
     <item android:id="@+id/search"
         android:title="Search"
         android:icon="@drawable/ic_search"
-        app:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="ifRoom"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item android:visible="true" android:id="@+id/action_sort"
+        android:title="Sort"
+        android:icon="@drawable/ic_sort"
+        app:showAsAction="ifRoom"
+        android:enabled="true">
+        <menu>
+            <item android:id="@+id/action_sort_name_asc" android:title="Name by A-Z"/>
+            <item android:id="@+id/action_sort_name_desc" android:title="Name by Z-A"/>
+            <item android:id="@+id/action_sort_date_asc" android:title="Oldest to Newest"/>
+            <item android:id="@+id/action_sort_date_desc" android:title="Newest to Oldest"/>
+        </menu>
+    </item>
+
 </menu>
