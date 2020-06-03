@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.moor.scannit.R
 import com.moor.scannit.databinding.FragmentImageFilterBinding
 import com.moor.scannit.supportActionBar
@@ -47,8 +48,6 @@ class FilterFragment : Fragment() {
           binding.apply {
 
               bitmap?.let {
-
-
                   imageView.setImageBitmap(bitmap)
 
                   val filters: List<Filter> =
@@ -62,20 +61,44 @@ class FilterFragment : Fragment() {
                       ThumbnailsManager.addThumb(item)
                   }
                   filtersListView.apply {
-                    adapter= FilterAdapter(ThumbnailsManager.processThumbs(requireContext())).apply {
-                        listener= object :FilterAdapter.FilterAdapterCallback{
-                            override fun onClick(item:ThumbnailItem) {
-                                imageView.setImageBitmap(item.filter.processFilter(bitmap.copy(bitmap.config,true)))
+                      adapter= FilterAdapter(ThumbnailsManager.processThumbs(requireContext())).apply {
+                            listener= object :FilterAdapter.FilterAdapterCallback{
+                                override fun onClick(item:ThumbnailItem) {
+                                    imageView.setImageBitmap(item.filter.processFilter(bitmap.copy(bitmap.config,true)))
+                                }
                             }
-                        }
-                    }
-                  layoutManager= LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
-                  addItemDecoration(SpacesItemDecoration(8))
-                }
+                      }
+                      layoutManager= LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+                      addItemDecoration(SpacesItemDecoration(8))
+                  }
+
+                  discardButton.setOnClickListener {
+                        discardImage()
+                  }
+
+                  doneButton.setOnClickListener {
+                      val bmp = binding.imageView.drawToBitmap()
+                      val documentId  =  viewModel.saveCroppedImage(bmp)
+                      val action= FilterFragmentDirections.actionImageFilterFragmentToDocumentFragment(documentId)
+                      findNavController().navigate(action)
+                  }
               }
           }
         })
 
+
+    }
+
+    private fun discardImage() {
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        builder.setMessage("Are you sure you want to discard ?")
+        builder.setCancelable(false)
+        builder.setPositiveButton("Yes"){ dialog, which ->
+            val action= FilterFragmentDirections.actionImageFilterFragmentToCameraFragment()
+            findNavController().navigate(action)
+        }
+        builder.setNegativeButton("No",null)
+        builder.show()
 
     }
 
@@ -93,10 +116,7 @@ class FilterFragment : Fragment() {
 
         when(item.itemId){
             R.id.action_save->{
-                val bitmap = binding.imageView.drawToBitmap()
-                val documentId  =  viewModel.saveCroppedImage(bitmap)
-                val action= FilterFragmentDirections.actionImageFilterFragmentToDocumentFragment(documentId)
-                findNavController().navigate(action)
+
             }
         }
         return super.onOptionsItemSelected(item)

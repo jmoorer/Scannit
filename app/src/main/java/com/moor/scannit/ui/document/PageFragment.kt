@@ -54,14 +54,15 @@ class PageFragment:Fragment() {
                 pagerAdapter = PageViewAdapter(pages)
 
                 pagesViewPager.adapter= pagerAdapter
+                pagesViewPager.setCurrentItem(args.pageIndex-1,false)
                 pagesViewPager.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
                     override fun onPageSelected(position: Int) {
                         super.onPageSelected(position)
-                        supportActionBar?.title="Page ${position+1} of ${pages.count()}"
+                        supportActionBar?.title="Page ${position+1} of ${pages.size}"
                     }
                 })
 
-                pagesViewPager.setCurrentItem(args.pageIndex-1,false)
+                supportActionBar?.title="Page ${args.pageIndex} of ${pages.size}"
 
                 pageAddButton.setOnClickListener {
                     val action = PageFragmentDirections.actionPageFragmentToCameraFragment(pages.first().document.targetId)

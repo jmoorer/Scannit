@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,96 +7,60 @@
     android:orientation="vertical"
     tools:context=".ui.camera.ImageProcessFragment">
 
-<!--    <ImageView-->
-<!--        android:id="@+id/imageView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="10"-->
-<!--        android:paddingLeft="16dp"-->
-<!--        android:paddingTop="16dp"-->
-<!--        android:paddingRight="16dp"-->
-<!--        android:paddingBottom="16dp"-->
-<!--        android:scaleType="fitCenter"-->
-<!--        />-->
-<!--    <com.isseiaoki.simplecropview.CropImageView-->
-<!--        android:id="@+id/imageView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="10"/>-->
-<!--    <com.naver.android.helloyako.imagecrop.view.ImageCropView-->
-<!--        xmlns:imagecrop="http://schemas.android.com/apk/res-auto"-->
-<!--        android:id="@+id/image_view"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="10"-->
-<!--        imagecrop:outsideLayerColor="#99000000"-->
-<!--        imagecrop:setInnerGridMode="on"-->
-<!--        imagecrop:gridInnerStroke="1dp"-->
-<!--        imagecrop:gridInnerColor="#66ffffff"-->
-<!--        imagecrop:setOuterGridMode="on"-->
-<!--        imagecrop:gridOuterStroke="1dp"-->
-<!--        imagecrop:gridOuterColor="#ffffff"/>-->
-    <com.theartofdev.edmodo.cropper.CropImageView
-        xmlns:custom="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
+
+    <ViewFlipper
+        android:id="@+id/flipper"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="10"/>
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        custom:layout_constraintBottom_toTopOf="@+id/filter_list_view"
+        custom:layout_constraintEnd_toEndOf="parent"
+        custom:layout_constraintStart_toStartOf="parent"
+        custom:layout_constraintTop_toTopOf="parent">
+        <com.theartofdev.edmodo.cropper.CropImageView
+            android:id="@+id/crop_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </ViewFlipper>
+
+
+    <ImageButton
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_check"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageButton
+        android:id="@+id/discard_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_check"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintStart_toStartOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/filters_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:id="@+id/filter_list_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        custom:layout_constraintBottom_toTopOf="@+id/save_button"
+        custom:layout_constraintEnd_toEndOf="parent"
+        custom:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/colorPrimary">
 
-        <!--        <ImageButton-->
-        <!--            android:id="@+id/filter_button"-->
-        <!--            android:layout_width="40dp"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            android:background="@null"-->
-        <!--            android:scaleType="fitCenter"-->
-        <!--            android:src="@drawable/ic_filter"-->
-        <!--            tools:layout_editor_absoluteX="176dp" />-->
-
-        <ImageButton
-            android:id="@+id/crop_button"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_crop"
-            custom:layout_constraintEnd_toStartOf="@+id/ocr_button"
-            custom:layout_constraintHorizontal_bias="0.5"
-            custom:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="-16dp" />
-
-        <ImageButton
-            android:id="@+id/ocr_button"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_ocr_on"
-            custom:layout_constraintEnd_toStartOf="@+id/done_button"
-            custom:layout_constraintHorizontal_bias="0.5"
-            custom:layout_constraintStart_toEndOf="@+id/crop_button"
-            tools:layout_editor_absoluteY="0dp" />
-
-        <ImageButton
-            android:id="@+id/done_button"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_check"
-            custom:layout_constraintEnd_toEndOf="parent"
-            custom:layout_constraintHorizontal_bias="0.5"
-            custom:layout_constraintStart_toEndOf="@+id/ocr_button"
-            tools:layout_editor_absoluteY="0dp" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

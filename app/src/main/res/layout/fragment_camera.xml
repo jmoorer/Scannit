@@ -38,11 +38,7 @@
                     android:button="@null"
                     android:background="@drawable/single_toggle"
                     style="@style/CameraOption"/>
-                <RadioButton
-                    android:id="@+id/ocr_radio"
-                    android:button="@null"
-                    android:background="@drawable/ocr_toggle"
-                    style="@style/CameraOption"/>
+
                 <RadioButton
                     android:id="@+id/batch_radio"
                     android:button="@null"

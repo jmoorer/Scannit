@@ -1,102 +1,171 @@
 package com.moor.scannit.ui.ocr
 
+import android.Manifest
 import android.annotation.SuppressLint
-import android.graphics.Color
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
+import android.view.*
+import androidx.camera.core.*
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.children
-import androidx.core.view.forEach
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.ui.setupWithNavController
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer
+
+import com.google.common.util.concurrent.ListenableFuture
 import com.moor.scannit.R
-import com.moor.scannit.databinding.FragmentImageFilterBinding
+import com.moor.scannit.allPermissionsGranted
+import com.moor.scannit.databinding.FragmentCameraBinding
 import com.moor.scannit.databinding.FragmentOcrBinding
+import com.moor.scannit.supportActionBar
+import com.moor.scannit.toBitmap
+import com.moor.scannit.ui.camera.CameraFragmentDirections
+import com.moor.scannit.ui.camera.CameraViewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.security.Permission
 
 
-class OcrFragment : Fragment() {
+class OcrFragment() : Fragment() {
+
+    private lateinit var imageAnalyzer: ImageAnalysis
+    private lateinit var imageCapture: ImageCapture
+    private lateinit var imagePreview: Preview
+    private lateinit var  cameraProviderFuture:ListenableFuture<ProcessCameraProvider>
+    private lateinit var cameraControl: CameraControl
+    private lateinit var cameraInfo: CameraInfo
+
+    private lateinit var binding: FragmentOcrBinding
+    private  val previewView get()=binding.previewView
+    private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    private val REQUEST_CODE_PERMISSIONS = 10
 
 
-    private lateinit var navController: NavController
-    private val args:OcrFragmentArgs  by navArgs()
-    private val viewModel:OcrViewModel by activityViewModels()
-
-    private val binding: FragmentOcrBinding by lazy {
-        FragmentOcrBinding.bind(requireView())
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-
+        binding = FragmentOcrBinding.inflate(layoutInflater,container,false).apply {
+            if (allPermissionsGranted(REQUIRED_PERMISSIONS)) {
+                previewView.post { startCamera() }
+            } else {
+                requestPermissions(
+                    REQUIRED_PERMISSIONS,
+                    REQUEST_CODE_PERMISSIONS
+                )
+            }
+            cameraCaptureButton.setOnClickListener {
+                takePicture()
+            }
+        }
+        return binding.root
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_ocr, container, false)
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val fragmentContainer = view.findViewById<View>(R.id.nav_host)
-        navController = Navigation.findNavController(fragmentContainer)
-    }
-    @SuppressLint("ResourceAsColor")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    @SuppressLint("ClickableViewAccessibility")
+    private fun startCamera() {
 
-        val dialog=LoadingDialog(requireContext())
-        val image=FirebaseVisionImage.fromFilePath(requireContext(),args.uri)
+        imageCapture = ImageCapture.Builder().apply {
+            setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+        }.build()
 
-        viewModel.extractText(image).observe(viewLifecycleOwner, Observer { state->
-            if(state.isLoading)
-                dialog.startLoadingDialog()
-            else{
-                dialog.stopLoadingDialog()
-                binding.apply {
-                    bottomNavigation.setupWithNavController(navController)
+        imagePreview = Preview.Builder().apply {
+            setTargetAspectRatio(AspectRatio.RATIO_16_9)
+            setTargetRotation(binding.previewView.display.rotation)
+        }.build()
 
-                    bottomNavigation.menu.forEach {
-                        val badge = bottomNavigation.getOrCreateBadge(it.itemId)
-                        badge.backgroundColor= resources.getColor(R.color.colorAccent)
-                        when(it.itemId){
-                            R.id.emailFragment->{
-                                badge?.isVisible= state.emails.any()
-                                badge?.number= state.emails.size
-                                it.isEnabled = state.emails.any()
-                            }
-                            R.id.linkFragment->{
-                                badge?.isVisible= state.links.any()
-                                badge?.number= state.links.size
-                                it.isEnabled = state.links.any()
-                            }
-                            R.id.phoneNumberFragment->{
-                                badge?.isVisible= state.numbers.any()
-                                badge?.number= state.numbers.size
-                                it.isEnabled = state.numbers.any()
-                            }
-                            else-> badge.isVisible=false
+        imageAnalyzer = ImageAnalysis.Builder().apply {
+            setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+        }.build()
 
-                        }
-                    }
+
+        val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+
+        cameraProviderFuture.addListener(Runnable {
+            val cameraProvider = cameraProviderFuture.get()
+            val camera = cameraProvider.bindToLifecycle(this, cameraSelector,imagePreview,imageCapture, imageAnalyzer)
+            cameraControl = camera.cameraControl
+            cameraInfo = camera.cameraInfo
+            previewView.preferredImplementationMode = PreviewView.ImplementationMode.TEXTURE_VIEW
+            imagePreview.setSurfaceProvider(previewView.createSurfaceProvider(cameraInfo))
+            val listener = object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    val currentZoomRatio: Float = cameraInfo.zoomState.value?.zoomRatio ?: 0F
+                    val delta = detector.scaleFactor
+                    cameraControl.setZoomRatio(currentZoomRatio * delta)
+                    return true
                 }
+            }
 
+            val scaleGestureDetector = ScaleGestureDetector(context, listener)
+
+            previewView.setOnTouchListener { _, event ->
+                scaleGestureDetector.onTouchEvent(event)
+                return@setOnTouchListener true
+            }
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+
+    @SuppressLint("RestrictedApi")
+    private fun takePicture() {
+        binding.apply {
+            shutter.visibility=View.VISIBLE
+            val handler = Handler()
+            handler.postDelayed({
+                shutter.visibility= View.GONE
+            }, 100)
+        }
+
+        imageCapture.takePicture(ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageCapturedCallback() {
+            override fun onError(exc: ImageCaptureException) {
+                Log.e("", "Photo capture failed: ${exc.message}", exc)
+            }
+
+            @SuppressLint("UnsafeExperimentalUsageError")
+            override fun onCaptureSuccess(imageProxy: ImageProxy) {
+                val rotation = imageProxy.imageInfo.rotationDegrees
+                val bitmap = imageProxy.image?.toBitmap(rotation)
+                bitmap?.let {
+                    val temp= File.createTempFile("images",".jpg",requireContext().cacheDir)
+                    val output = FileOutputStream(temp)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                    output.flush()
+                    output.close()
+
+                    val action= OcrFragmentDirections.actionOcrFragmentToOcrResultFragment(Uri.fromFile(temp))
+                    findNavController().navigate(action)
+                }
+                super.onCaptureSuccess(imageProxy)
             }
         })
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted(REQUIRED_PERMISSIONS)) {
+                previewView.post { startCamera() }
+            } else {
+                findNavController().popBackStack()
+            }
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun onDestroyView() {
+        super.onDestroyView()
+        CameraX.unbindAll()
+    }
 
 }

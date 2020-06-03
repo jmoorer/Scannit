@@ -203,7 +203,7 @@ class DocumentFragment : Fragment(), AdapterCallback<Page> {
                 override fun onActionItemClick(item: MenuItem) {
                     when(item.itemId){
                         R.id.action_delete->{
-                            val ids= pageAdapter.selectedIds
+                            val ids = pageAdapter.selectedIds
                             if (ids.any()){
                                 val builder = MaterialAlertDialogBuilder(requireContext())
                                 builder.setMessage("Are you sure you want to delete ${ids.size} pages(s) ?")
@@ -212,7 +212,7 @@ class DocumentFragment : Fragment(), AdapterCallback<Page> {
                                     viewModel.removePages(ids.toLongArray())
                                     viewModel.reIndexPages(pages.filter { !ids.contains(it.id) })
                                 }
-                                builder.setNegativeButton("No",{_,a->})
+                                builder.setNegativeButton("No",null)
                                 builder.setOnDismissListener {
                                     callback.finishActionMode()
                                 }
@@ -233,9 +233,7 @@ class DocumentFragment : Fragment(), AdapterCallback<Page> {
         }
 
         pageAdapter.canEdit=true
-        pageAdapter.selectedIds.apply {
-            clear()
-        }
+        pageAdapter.selectedIds.clear()
     }
 
     private val helper = ItemTouchHelper(object : ItemTouchHelper.Callback(){

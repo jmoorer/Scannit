@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -33,7 +34,7 @@ class ImageProcessFragment : Fragment(){
         viewModel.getImage().observe(viewLifecycleOwner, Observer {bitmap->
             binding.apply {
                 imageView.setImageBitmap(bitmap)
-
+                cropImageView.setImageBitmap(bitmap)
 
                 val filters: List<Filter> =
                     FilterPack.getFilterPack(activity)
@@ -46,37 +47,27 @@ class ImageProcessFragment : Fragment(){
                     ThumbnailsManager.addThumb(item)
                 }
 
-                filtersListView.apply {
+                filterListView.apply {
                     adapter= FilterAdapter(ThumbnailsManager.processThumbs(requireContext())).apply {
                         listener=object: FilterAdapter.FilterAdapterCallback {
                             override fun onClick(item: ThumbnailItem) {
-                               val re= imageView.cropRect
+
                                imageView.setImageBitmap(item.filter.processFilter(bitmap?.copy(bitmap.config,true)))
-                               imageView.cropRect=re
+
                             }
                         }
                     }
                     layoutManager= LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
 
                 }
-                doneButton.setOnClickListener {
-                     bitmap?.let{
-//                        val documentId  =  viewModel.saveCroppedImage(bitmap)
-//                        val action= ImageProcessFragmentDirections.actionImageProccessFragmentToDocumentFragment(documentId)
-//                        findNavController().navigate(action)
-                     }
+                var animFadein = AnimationUtils.loadAnimation(
+                    activity?.applicationContext,
+                    R.anim.fade_in)
+                discardButton.setOnClickListener {
+                    flipper.startAnimation(animFadein)
+                    flipper.showNext()
                 }
 
-                ocrButton.setOnClickListener {
-
-                    findNavController().navigate(R.id.imageFilterFragment)
-//                    val temp=File.createTempFile("images",".jpg",requireContext().cacheDir)
-//                    val output = FileOutputStream(temp)
-//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
-//                    output.flush()
-//                    output.close()
-//                    findNavController().navigate(R.id.extractedTextFragment, bundleOf("image_uri" to Uri.fromFile(temp).toString() ))
-                }
 
             }
         })
@@ -88,9 +79,9 @@ class ImageProcessFragment : Fragment(){
     ): View? {
 
         binding = FragmentImageProcessBinding.inflate(inflater,container,false).apply {
-            cropButton.setOnClickListener {
-                findNavController().navigate(R.id.cropFragment)
-            }
+//            cropButton.setOnClickListener {
+//                findNavController().navigate(R.id.cropFragment)
+//            }
         }
         return binding.root
     }

@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -20,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.itextpdf.text.Document
@@ -161,4 +163,7 @@ fun Context.setClipboard(text: String) {
         val clipboard = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("Copied Text", text)
         clipboard.setPrimaryClip(clip)
+}
+ fun Fragment.allPermissionsGranted(permissions: Array<String>) = permissions.all {
+    ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
 }

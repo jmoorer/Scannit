@@ -55,7 +55,8 @@ class CameraFragment() : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-        viewModel.setDocument(args.documentId)
+        if(args.documentId>0)
+            viewModel.setDocument(args.documentId)
         setHasOptionsMenu(true)
 
     }
@@ -67,7 +68,7 @@ class CameraFragment() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        supportActionBar?.title=null
+
 
         binding = FragmentCameraBinding.inflate(inflater, container, false).apply {
             this@CameraFragment.previewView = previewView
@@ -82,7 +83,6 @@ class CameraFragment() : Fragment() {
             modesRadioGroup.setOnCheckedChangeListener { group, checkedId ->
                 when(checkedId){
                     R.id.single_radio-> CameraViewModel.CameraMode.Single
-                    R.id.ocr_radio-> CameraViewModel.CameraMode.Ocr
                     R.id.batch_radio-> CameraViewModel.CameraMode.Batch
                     else-> CameraViewModel.CameraMode.None
                 }.let {
@@ -160,15 +160,6 @@ class CameraFragment() : Fragment() {
                     val bitmap = imageProxy.image?.toBitmap(rotation)
                     bitmap?.let {
                         when(viewModel.mode){
-                            CameraViewModel.CameraMode.Ocr->{
-                                val temp= File.createTempFile("images",".jpg",requireContext().cacheDir)
-                                val output = FileOutputStream(temp)
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
-                                output.flush()
-                                output.close()
-                                val action= CameraFragmentDirections.actionCameraFragmentToOcrFragment(Uri.fromFile(temp))
-                                findNavController().navigate(action)
-                            }
                             CameraViewModel.CameraMode.Single->{
                                 viewModel.setImage(bitmap)
                                 findNavController().navigate(R.id.cropFragment)

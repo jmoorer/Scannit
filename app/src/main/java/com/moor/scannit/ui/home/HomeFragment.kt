@@ -83,6 +83,10 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
                     )
                 }
             }
+            ocrButton.setOnClickListener {
+                val action = HomeFragmentDirections.actionHomeFragmentToOcrFragment()
+                findNavController().navigate(action)
+            }
         }
         setHasOptionsMenu(true)
         return binding.root
