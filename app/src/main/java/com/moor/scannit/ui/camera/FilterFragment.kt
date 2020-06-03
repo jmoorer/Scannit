@@ -28,10 +28,6 @@ class FilterFragment : Fragment() {
     private val binding: FragmentImageFilterBinding by lazy {
         FragmentImageFilterBinding.bind(requireView())
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,10 +40,10 @@ class FilterFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         supportActionBar?.title=""
-        viewModel.getImage().observe(viewLifecycleOwner, Observer { bitmap->
+        viewModel.getState().observe(viewLifecycleOwner, Observer { state->
           binding.apply {
 
-              bitmap?.let {
+              state.cropedBitmap?.let { bitmap->
                   imageView.setImageBitmap(bitmap)
 
                   val filters: List<Filter> =
@@ -107,19 +103,5 @@ class FilterFragment : Fragment() {
         ThumbnailsManager.clearThumbs()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_filter, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when(item.itemId){
-            R.id.action_save->{
-
-            }
-        }
-        return super.onOptionsItemSelected(item)
-
-    }
 }

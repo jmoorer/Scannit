@@ -3,6 +3,7 @@ package com.moor.scannit.ui.camera
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.*
 import com.moor.scannit.*
@@ -41,6 +42,7 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
         val loading:Boolean=false,
         val document:Document,
         val originalBitmap: Bitmap?=null,
+        val cropedBitmap: Bitmap?=null,
         val batchBitmaps: List<Bitmap>,
         val cameraMode: CameraMode
     )
@@ -55,6 +57,10 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setImage(bitmap: Bitmap){
        state.postValue(current?.copy(originalBitmap = bitmap))
+    }
+
+    fun setCropped(bitmap: Bitmap){
+        state.postValue(current?.copy(cropedBitmap = bitmap))
     }
 
 
@@ -110,7 +116,7 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun getImage() = Transformations.map(state){s->
-        s.originalBitmap
+        s.originalBitmap?.copy(s.originalBitmap.config,true)
     }
 
     fun setDocument(documentId:Long){

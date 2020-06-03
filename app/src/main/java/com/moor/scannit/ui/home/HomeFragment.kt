@@ -30,6 +30,7 @@ import com.moor.scannit.data.Document
 import com.moor.scannit.databinding.FragmentHomeBinding
 import com.moor.scannit.getRealPathFromUri
 import com.moor.scannit.ui.AdapterCallback
+import com.moor.scannit.ui.SpacesItemDecoration
 import com.moor.scannit.ui.camera.CameraViewModel
 import java.util.*
 
@@ -66,6 +67,7 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
 
                 layoutManager = LinearLayoutManager(requireContext())
                 addItemDecoration(DividerItemDecoration(context,DividerItemDecoration.VERTICAL))
+                addItemDecoration(SpacesItemDecoration(8))
                 helper.attachToRecyclerView(this)
             }
             scanButton.setOnClickListener {

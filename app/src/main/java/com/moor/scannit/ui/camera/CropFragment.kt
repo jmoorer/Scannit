@@ -36,12 +36,12 @@ class CropFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.getImage().observe(viewLifecycleOwner, Observer { bitmap->
+        viewModel.getState().observe(viewLifecycleOwner, Observer {state->
             binding.apply {
-                cropImageView.setImageBitmap(bitmap)
+                cropImageView.setImageBitmap(state.originalBitmap)
 
                 doneButton.setOnClickListener {
-                    viewModel.setImage(cropImageView.croppedImage)
+                    viewModel.setCropped(cropImageView.croppedImage)
                     findNavController().navigate(R.id.imageFilterFragment)
                 }
                 rotateLeftButton.setOnClickListener {
