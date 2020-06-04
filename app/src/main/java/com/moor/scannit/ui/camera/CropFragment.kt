@@ -18,9 +18,7 @@ import com.moor.scannit.databinding.FragmentCropBinding
 class CropFragment : Fragment() {
 
     private val viewModel:CameraViewModel by activityViewModels()
-    private val binding:FragmentCropBinding by lazy {
-        FragmentCropBinding.bind(requireView())
-    }
+    private lateinit var binding:FragmentCropBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,8 +28,8 @@ class CropFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        return inflater.inflate(R.layout.fragment_crop, container, false)
+        binding = FragmentCropBinding.inflate(inflater,container,false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

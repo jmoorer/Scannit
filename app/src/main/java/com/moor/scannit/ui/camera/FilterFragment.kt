@@ -39,7 +39,7 @@ class FilterFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        supportActionBar?.title=""
+
         viewModel.getState().observe(viewLifecycleOwner, Observer { state->
           binding.apply {
 
@@ -60,6 +60,7 @@ class FilterFragment : Fragment() {
                       adapter= FilterAdapter(ThumbnailsManager.processThumbs(requireContext())).apply {
                             listener= object :FilterAdapter.FilterAdapterCallback{
                                 override fun onClick(item:ThumbnailItem) {
+                                    adapter?.notifyDataSetChanged()
                                     imageView.setImageBitmap(item.filter.processFilter(bitmap.copy(bitmap.config,true)))
                                 }
                             }

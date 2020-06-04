@@ -32,7 +32,7 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_folder_2"
+                    android:src="@drawable/ic_folder_3"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -47,14 +47,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:elevation="5dp">
 
         <ImageButton
             android:id="@+id/ocr_button"
             style="@style/ImageAction"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@null"
             android:src="@drawable/ic_ocr"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/scan_button"
@@ -89,7 +89,6 @@
             style="@style/ImageAction"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@null"
             android:src="@drawable/ic_photo_library"
             app:layout_anchorGravity="end"
             app:layout_constraintBottom_toBottomOf="parent"

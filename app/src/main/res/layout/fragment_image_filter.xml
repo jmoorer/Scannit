@@ -11,13 +11,12 @@
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"
+        android:layout_weight="4"
         android:layout_margin="16dp"/>
     <androidx.recyclerview.widget.RecyclerView
-        android:backgroundTint="@color/colorPrimary"
         android:id="@+id/filters_list_view"
         android:layout_width="match_parent"
-        android:layout_height="150dp" />
+        android:layout_height="wrap_content" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -27,7 +26,6 @@
         <ImageButton
             android:id="@+id/discard_button"
             style="@style/ImageAction"
-            android:background="@null"
             android:src="@drawable/ic_delete"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
@@ -42,7 +40,6 @@
             style="@style/ImageAction"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@null"
             android:src="@drawable/ic_check"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

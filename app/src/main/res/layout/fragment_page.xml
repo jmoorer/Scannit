@@ -27,7 +27,6 @@
             style="@style/ImageAction"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:background="@null"
             android:src="@drawable/ic_ocr"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/download_button"
@@ -38,7 +37,6 @@
         <ImageButton
             android:id="@+id/download_button"
             style="@style/ImageAction"
-            android:background="@null"
             android:src="@drawable/ic_file_download"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/page_add_button"
@@ -49,7 +47,6 @@
         <ImageButton
             android:id="@+id/page_add_button"
             style="@style/ImageAction"
-            android:background="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/delete_button"
             app:layout_constraintHorizontal_bias="0.5"
@@ -60,7 +57,6 @@
         <ImageButton
             android:id="@+id/delete_button"
             style="@style/ImageAction"
-            android:background="@null"
             android:src="@drawable/ic_delete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

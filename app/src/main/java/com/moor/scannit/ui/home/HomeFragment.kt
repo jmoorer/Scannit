@@ -66,7 +66,6 @@ class HomeFragment : Fragment(), AdapterCallback<Document> {
                 }
 
                 layoutManager = LinearLayoutManager(requireContext())
-                addItemDecoration(DividerItemDecoration(context,DividerItemDecoration.VERTICAL))
                 addItemDecoration(SpacesItemDecoration(8))
                 helper.attachToRecyclerView(this)
             }

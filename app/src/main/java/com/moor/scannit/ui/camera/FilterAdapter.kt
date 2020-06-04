@@ -1,5 +1,6 @@
 package com.moor.scannit.ui.camera
 
+import android.os.Handler
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -8,6 +9,7 @@ import com.moor.scannit.inflater
 import com.moor.scannit.ui.BoundViewHolder
 import com.zomato.photofilters.imageprocessors.Filter
 import com.zomato.photofilters.utils.ThumbnailItem
+
 
 class FilterAdapter(val items :List<ThumbnailItem>):RecyclerView.Adapter<BoundViewHolder<ItemFilterBinding>>() {
 
@@ -35,13 +37,10 @@ class FilterAdapter(val items :List<ThumbnailItem>):RecyclerView.Adapter<BoundVi
         holder.binding.apply {
             filterTextView.text= entry.filterName
             filterImageView.setImageBitmap(entry.image)
-            selectedIcon.isVisible = position==selectedIndex
+            frame.isSelected=position==selectedIndex
             root.setOnClickListener {
-                notifyItemChanged(selectedIndex)
                 selectedIndex = position
                 listener?.onClick(entry)
-                notifyItemChanged(position)
-
             }
         }
 
